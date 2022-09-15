@@ -2,8 +2,6 @@
 Classe Pile
 """
 
-from noeud import Noeud
-
 
 class Pile:
     """
