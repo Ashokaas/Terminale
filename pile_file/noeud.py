@@ -7,7 +7,7 @@ class Noeud:
           - un "item" qui contient l'information
           - une "ref" qui contient éventuellement l'adresse du noeud suivant
     '''
-    def __init__(self, data):
+    def __init__(self, data=None):
         self.item = data  # on affecte une donnée au noeud
         self.ref = None   # on pointe sur le suivant
 
