@@ -1,5 +1,5 @@
 # =====================================
-#      IMPORTATIONS DES LIBRAIRIES 
+#      IMPORTATIONS DES LIBRAIRIES
 # =====================================
 
 # Tkinter
@@ -43,58 +43,68 @@ class Root:
         self.frame_talon.pack(fill=Y, side=LEFT)
         self.frame_talon.pack_propagate(False)
 
-        
+
         self.label_talon = Label(self.frame_talon, text="Talon")
         self.label_talon.pack()
 
-        image = Image.open("img/carte_dos.jpg") 
+        image = Image.open("img/carte_dos.jpg")
         photo = ImageTk.PhotoImage(image)
 
-         
-        canvas = Canvas(self.frame_talon, width=image.size[0], height=image.size[1]) 
+
+        canvas = Canvas(self.frame_talon, width=image.size[0], height=image.size[1])
         canvas.create_image(0,0, image=photo)
-        canvas.pack() 
-        
+        canvas.pack()
+
 
 
 
 # class Game
 class Game:
-    
+
     def __init__(self, nb_cartes:str):
         # Asssertion pour le nombre de cartes
         assert nb_cartes in ["32", "52"], "Le nombre de cartes doit être égal à 32 ou 52"
-        
+
+        self.nb_cartes = nb_cartes
+
         # Définition du jeu en fonction du nombre de cartes
         self.jeu_cartes = JeuCarte.JeuCarte(nb_cartes)
         self.jeu_cartes.melangerJeu()
-        
+
         # Définition du talon et de la main en cours
         self.talon = p.Pile(self.jeu_cartes.getJeu())
-        self.talon_main = p.Pile()
-        
+        self.talon_en_main = p.Pile(self.talon.get_3_first_cards())
+
         # Définition des 4 défausses
         self.defausse1 = p.Pile()
         self.defausse2 = p.Pile()
         self.defausse3 = p.Pile()
         self.defausse4 = p.Pile()
-        
+
         # Définition des 4 types
         self.piques = p.Pile()
         self.carreaux = p.Pile()
         self.trefles = p.Pile()
         self.coeurs = p.Pile()
-        
-        
+
+
         print(self)
-        
-        
+
+
         exit()
-        
-        
 
 
-fenetre = Root()
+
+    def verifier_victoire(self):
+    	if int(self.nb_cartes) == self.piques.taille + self.carreaux.taille + self.trefles.taille + self.coeurs.taille:
+			return True
+		else:
+			return False
+
+
+
+
+#fenetre = Root()
 # Clear la console
 clear()
 
@@ -106,15 +116,16 @@ print("___________________________________")
 # Demande à l'utilisateur le nombre de cartes qu'il souhaite
 nb_cartes = input("\nNombre de cartes (32/52) : ")
 
-# Si il a choisi 32 ou 52 la partie se lance 
+# Si il a choisi 32 ou 52 la partie se lance
 if nb_cartes in ["32", "52"]:
     partie = Game(nb_cartes)
-    
+
 # Sinon elle d'arrête
 else:
     print('Nombre de cartes invalide')
     print('Arrêt du programme')
     exit()
-    
-    
-    
+
+
+
+
