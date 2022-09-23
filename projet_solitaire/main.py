@@ -6,7 +6,6 @@
 from tkinter import *
 from tkinter import ttk, filedialog
 from PIL import ImageTk, Image
-
 # Necessaires au bon fonctionnement d'un jeu de carte
 import Carte
 import JeuCarte
@@ -27,24 +26,34 @@ clear = lambda:os.system('clear')
 # class Root
 class Root:
     def __init__(self):
+
+        self.bg_color = "green"
                 # -- Configuration de la fenêtre
         self.root = Tk()
         self.root.title("Solitaire v3")
-
         self.root.resizable(False, False)
+        self.root.configure(bg=self.bg_color)
 
         hauteur = 600
         largeur = 850
         self.root.geometry(str(largeur) + 'x' + str(hauteur))
 
         # -- Frame Talon
-        self.frame_talon = Frame(self.root, bg="black", width=200, height=200)
-        self.frame_talon.pack(expand=0, fill=Y, side=LEFT)
+        self.frame_talon = Frame(self.root, width=200, bg="blue")
+        self.frame_talon.pack(fill=Y, side=LEFT)
         self.frame_talon.pack_propagate(False)
+
         
         self.label_talon = Label(self.frame_talon, text="Talon")
-        self.label_talon.grid(column=0, row=0)
-        self.label_talon.pack_propagate(False)
+        self.label_talon.pack()
+
+        image = Image.open("img/carte_dos.jpg") 
+        photo = ImageTk.PhotoImage(image)
+
+         
+        canvas = Canvas(self.frame_talon, width=image.size[0], height=image.size[1]) 
+        canvas.create_image(0,0, image=photo)
+        canvas.pack() 
         
 
 
