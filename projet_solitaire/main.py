@@ -13,47 +13,75 @@ import pile as p
 
 # Supplémentaires
 import random
-from colorama import Fore
+import colorama as cl
 import os
+import keyboard
 
 
 
 # Fonction pour clear la console
-clear = lambda:os.system('clear')
+clear = lambda:os.system('cls')
 
 
 
 # class Root
-class Root:
+class Console:
+    
     def __init__(self):
+        self.carreau = cl.Fore.RED + "♦" + cl.Fore.WHITE
+        self.pique =  cl.Fore.BLACK + "♠" + cl.Fore.WHITE
+        self.coeur = cl.Fore.RED + "♥" + cl.Fore.WHITE
+        self.trefle = cl.Fore.BLACK + "♣" + cl.Fore.WHITE
+        clear()
+    
+    def main_menu(self):
+        clear()
+        print(f"""  
+            ░██████╗░█████╗░██╗░░░░░██╗████████╗░█████╗░██╗██████╗░███████╗
+            ██╔════╝██╔══██╗██║░░░░░██║╚══██╔══╝██╔══██╗██║██╔══██╗██╔════╝
+            ╚█████╗░██║░░██║██║░░░░░██║░░░██║░░░███████║██║██████╔╝█████╗░░
+            ░╚═══██╗██║░░██║██║░░░░░██║░░░██║░░░██╔══██║██║██╔══██╗██╔══╝░░
+            ██████╔╝╚█████╔╝███████╗██║░░░██║░░░██║░░██║██║██║░░██║███████╗
+            ╚═════╝░░╚════╝░╚══════╝╚═╝░░░╚═╝░░░╚═╝░░╚═╝╚═╝╚═╝░░╚═╝╚══════╝
+                        
+                    {cl.Fore.YELLOW}Appuyez sur ESPACE pour commencer une partie !{cl.Fore.WHITE}
+        """)
+        keyboard.wait('space')
+        clear()
+        print("Voulez vous jouer à 32 ou 52 cartes ?\n< >")
+        #keyboard.wait('left', )
+    
 
-        self.bg_color = "green"
-                # -- Configuration de la fenêtre
-        self.root = Tk()
-        self.root.title("Solitaire v3")
-        self.root.resizable(False, False)
-        self.root.configure(bg=self.bg_color)
+    def aficher_carte(self, type=None, valeur=None):
+        print("┌" + "─"*11 + "┐")
+        
+        
+        if valeur:
+            if len(valeur) == 1:
+                print(f"│ {valeur}{' '*9}│")
+            elif len(valeur) > 1:
+                print(f"│ {valeur}{' '*8}│")
+                
+        print(f"│{' '*11}│")
+        print(f"│{' '*5}{type}{' '*5}│")
+        print(f"│{' '*11}│")
+        
+        if valeur:
+            if len(valeur) == 1:
+                print(f"│{' '*9}{valeur} │")
+            elif len(valeur) > 1:
+                print(f"│{' '*8}{valeur} │")
+                
+        
+        
+        print("└" + "─"*11 + "┘")
+        
 
-        hauteur = 600
-        largeur = 850
-        self.root.geometry(str(largeur) + 'x' + str(hauteur))
-
-        # -- Frame Talon
-        self.frame_talon = Frame(self.root, width=200, bg="blue")
-        self.frame_talon.pack(fill=Y, side=LEFT)
-        self.frame_talon.pack_propagate(False)
 
 
-        self.label_talon = Label(self.frame_talon, text="Talon")
-        self.label_talon.pack()
-
-        image = Image.open("img/carte_dos.jpg")
-        photo = ImageTk.PhotoImage(image)
-
-
-        canvas = Canvas(self.frame_talon, width=image.size[0], height=image.size[1])
-        canvas.create_image(0,0, image=photo)
-        canvas.pack()
+console = Console()
+console.aficher_carte(type=console.trefle, valeur="10")
+console.main_menu()
 
 
 
@@ -96,18 +124,17 @@ class Game:
 
 
     def verifier_victoire(self):
-    	if int(self.nb_cartes) == self.piques.taille + self.carreaux.taille + self.trefles.taille + self.coeurs.taille:
-			return True
-		else:
-			return False
-
+        if int(self.nb_cartes) == self.piques.taille + self.carreaux.taille + self.trefles.taille + self.coeurs.taille:
+            return True
+        else:
+            return False
 
 
 
 #fenetre = Root()
 # Clear la console
-clear()
-
+#clear()
+"""
 # Affichage du nom du jeu
 print("‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾")
 print(Fore.YELLOW + "   Jouer au Solitaire (32/52) ?      " + Fore.WHITE)
@@ -124,7 +151,7 @@ if nb_cartes in ["32", "52"]:
 else:
     print('Nombre de cartes invalide')
     print('Arrêt du programme')
-    exit()
+    exit()"""
 
 
 

@@ -44,9 +44,9 @@ class Pile:
         return len(self.valeurs)
 
     def get_3_first_cards(self):
-    	main_de_base = []
-    	for e in range(3):
-    		main_de_base.append(self.pop())
+        main_de_base = []
+        for e in range(3):
+            main_de_base.append(self.pop())
         return main_de_base
         
         
