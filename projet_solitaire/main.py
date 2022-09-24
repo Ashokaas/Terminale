@@ -6,6 +6,7 @@
 from tkinter import *
 from tkinter import ttk, filedialog
 from PIL import ImageTk, Image
+
 # Necessaires au bon fonctionnement d'un jeu de carte
 import Carte
 import JeuCarte
@@ -16,11 +17,9 @@ import random
 import colorama as cl
 import os
 import keyboard
+import platform
 
 
-
-# Fonction pour clear la console
-clear = lambda:os.system('cls')
 
 
 
@@ -28,14 +27,53 @@ clear = lambda:os.system('cls')
 class Console:
     
     def __init__(self):
-        self.carreau = cl.Fore.RED + "♦" + cl.Fore.WHITE
-        self.pique =  cl.Fore.BLACK + "♠" + cl.Fore.WHITE
-        self.coeur = cl.Fore.RED + "♥" + cl.Fore.WHITE
-        self.trefle = cl.Fore.BLACK + "♣" + cl.Fore.WHITE
-        clear()
+        self.carreau = self.color_text(text="♦", color="RED")
+        self.pique =  self.color_text(text="♠", color="BLACK")
+        self.coeur = self.color_text(text="♥", color="RED")
+        self.trefle = self.color_text(text="♣", color="BLACK")
+        self.nb_cartes = None
+        
+        self.os = platform.system()
+        
+        self.clear()
+        
+        
+    
+    def clear(self):
+        """Clear la console en fonction de l'os
+        """
+        if self.os == "Windows":
+            os.system('cls')
+        elif self.os == "Linux":
+            os.system('clear')
+        
+        
+    def color_text(self, text:str, color:str):
+        """Change la couleur d'un texte si l'utilisateur est sur Windows
+
+        Args:
+            text (str): Texte dont il faut changer la couleur
+            color (str): Couleur choisie
+
+        Returns:
+            str: Texte coloré
+        """
+        if platform.system() == "Windows":
+            text = f"{cl.Fore.__getattribute__(color)}{text}{cl.Fore.WHITE}"
+        
+        return text
+        
     
     def main_menu(self):
-        clear()
+        """Affiche le menu principal du jeu et demande à l'utilisateur le nombre de cartes à utiliser
+
+        Returns:
+            str: Nombre de cartes
+        """
+        
+        self.clear()
+        
+        # Titre du jeu (ASCII Art : https://fsymbols.com/generators/carty/)
         print(f"""  
             ░██████╗░█████╗░██╗░░░░░██╗████████╗░█████╗░██╗██████╗░███████╗
             ██╔════╝██╔══██╗██║░░░░░██║╚══██╔══╝██╔══██╗██║██╔══██╗██╔════╝
@@ -46,43 +84,56 @@ class Console:
                         
                     {cl.Fore.YELLOW}Appuyez sur ESPACE pour commencer une partie !{cl.Fore.WHITE}
         """)
+        
         keyboard.wait('space')
-        clear()
-        print("Voulez vous jouer à 32 ou 52 cartes ?\n< >")
-        #keyboard.wait('left', )
-    
+        print("Voulez vous jouer à 32 ou 52 cartes ou alors laisser le hasard décider ? (1/2/3)")
 
-    def aficher_carte(self, type=None, valeur=None):
+        # En attente du choix de l'utilisateur : uniquement s'il a pressé 1, 2 ou 3 en minuscule ou en majuscule
+        keyboard_nb_cartes = keyboard.read_key()
+        while keyboard_nb_cartes not in ["1", "&", "2", "é", "3", '"']:
+            keyboard_nb_cartes = keyboard.read_key()
+            
+        # Return le nombre de cartes
+        if keyboard.read_key() in ["1", "&"]:
+            self.nb_cartes = "32"
+        elif keyboard.read_key() in ["2", "é"]:
+            self.nb_cartes = "52"
+        else:
+            self.nb_cartes = random.choice(seq=["32", "52"])
+            
+        return self.nb_cartes
+            
+            
+
+    def aficher_carte(self, famille:str="?", valeur:str="?"):
+        """Affiche une carte caspécifique
+
+        Args:
+            famille (str, optional): Famille de carte (carreau, trefle, pique, coeur). Defaults to "?".
+            valeur (str, optional): Valeur de la carte (5, 8, K, etc). Defaults to "?".
+        """
+        
+        # Première ligne
         print("┌" + "─"*11 + "┐")
         
-        
-        if valeur:
-            if len(valeur) == 1:
-                print(f"│ {valeur}{' '*9}│")
-            elif len(valeur) > 1:
-                print(f"│ {valeur}{' '*8}│")
+        # Deuxième ligne
+        print(f"│ {valeur}{' '*(10-len(valeur))}│")
                 
-        print(f"│{' '*11}│")
-        print(f"│{' '*5}{type}{' '*5}│")
+        # Troisième ligne
         print(f"│{' '*11}│")
         
-        if valeur:
-            if len(valeur) == 1:
-                print(f"│{' '*9}{valeur} │")
-            elif len(valeur) > 1:
-                print(f"│{' '*8}{valeur} │")
+        # Ligne du milieu (Quatrième)
+        print(f"│{' '*5}{famille}{' '*5}│")
+        
+        # Antépénultième ligne
+        print(f"│{' '*11}│")
+        
+        # Avant dernière ligne
+        print(f"│{' '*(10-len(valeur))}{valeur} │")
                 
-        
-        
+        # Dernière ligne
         print("└" + "─"*11 + "┘")
         
-
-
-
-console = Console()
-console.aficher_carte(type=console.trefle, valeur="10")
-console.main_menu()
-
 
 
 
@@ -154,5 +205,11 @@ else:
     exit()"""
 
 
+
+
+console = Console()
+console.aficher_carte(famille=console.trefle, valeur="K")
+#nb_cartes = console.main_menu()
+#partie = Game(nb_cartes=nb_cartes)
 
 
