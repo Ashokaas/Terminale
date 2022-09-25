@@ -48,6 +48,10 @@ class Pile:
         for e in range(3):
             main_de_base.append(self.pop())
         return main_de_base
+    
+    def get_all_cards(self):
+        return self.valeurs
+    
         
         
 

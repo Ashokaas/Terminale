@@ -4,7 +4,7 @@ class Carte:  # définition de la classe
         self.famille = fam  # création du deuxième attribut
 
     def getAttributs(self):  # méthode 2 : un 1er accesseur
-        return (self.valeur, self.famille)
+        return [self.valeur, self.famille]
 
     def getValeur(self):  # méthode 3 : un 2ème accesseur
         return self.valeur
