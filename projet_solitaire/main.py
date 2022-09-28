@@ -20,9 +20,6 @@ import keyboard
 import platform
 
 
-print(os.get_terminal_size())
-exit()
-
 
 
 # class Root
@@ -122,7 +119,8 @@ class Game:
 
         # Définition du talon et de la main en cours
         self.talon = p.Pile(self.jeu_cartes.getJeu())
-        self.talon_en_main = p.Pile(self.talon.get_3_first_cards())
+        self.talon_en_main = self.talon.pop()
+        self.talon_temp = p.Pile()
 
         # Définition des 4 défausses
         self.defausse1 = p.Pile()
@@ -161,7 +159,14 @@ class Game:
         text = str(text)
         text = text.replace('Carreau', self.carreau).replace('Pique', self.pique).replace('Coeur', self.coeur).replace('Trèfle', self.trefle)
         return text
-                
+    
+    
+    def couleurs_familles(self, text):
+        if text in [self.carreau, self.coeur]:
+            return self.color_text(text=text, color="RED")
+        else:
+            return text
+        
     
     def clear(self):
         """Clear la console en fonction de l'os
@@ -207,17 +212,17 @@ class Game:
     
             
     def interface(self):
-        #self.clear()
+        self.clear()
         
         print("""\n\n\n
-                    Talon           │          Carte 1            Carte 2           Carte 3           ││          Coeurs            Piques           Carreaux           Trèfles                       
-                ┌───────────┐       │       ┌───────────┐      ┌───────────┐     ┌───────────┐        ││       ┌───────────┐     ┌───────────┐     ┌───────────┐     ┌───────────┐                     
-                │ {}        │       │       │ {}        │      │ {}        │     │ {}        │        ││       │ {}        │     │ {}        │     │ {}        │     │ {}        │                     
-                │           │       │       │           │      │           │     │           │        ││       │           │     │           │     │           │     │           │                     
-                │     ?     │       │       │           │      │           │     │           │        ││       │           │     │           │     │           │     │           │                     
-                │           │       │       │           │      │           │     │           │        ││       │           │     │           │     │           │     │           │                     
-                │        {} │       │       │        {} │      │        {} │     │        {} │        ││       │        {} │     │        {} │     │        {} │     │        {} │                     
-                └───────────┘       │       └───────────┘      └───────────┘     └───────────┘        ││       └───────────┘     └───────────┘     └───────────┘     └───────────┘                                    
+                    Talon           │       Carte Piochée       ││          Coeurs            Piques           Carreaux           Trèfles                       
+                ┌───────────┐       │       ┌───────────┐       ││       ┌───────────┐     ┌───────────┐     ┌───────────┐     ┌───────────┐                     
+                │ {}        │       │       │ {}        │       ││       │ {}        │     │ {}        │     │ {}        │     │ {}        │                     
+                │           │       │       │           │       ││       │           │     │           │     │           │     │           │                     
+                │     ?     │       │       │           │       ││       │           │     │           │     │           │     │           │                     
+                │           │       │       │           │       ││       │           │     │           │     │           │     │           │                     
+                │        {} │       │       │        {} │       ││       │        {} │     │        {} │     │        {} │     │        {} │                     
+                └───────────┘       │       └───────────┘       ││       └───────────┘     └───────────┘     └───────────┘     └───────────┘                                    
         """.format(
             # Haut
                 # Talon Haut
@@ -225,11 +230,7 @@ class Game:
                 
                 
                 # Carte 1 Haut
-                self.text_console(text=self.talon_en_main.get_all_cards()[0][0], debut_fin="debut"), 
-                # Carte 2 Haut
-                self.text_console(text=self.talon_en_main.get_all_cards()[1][0], debut_fin="debut"),
-                # Carte 3 Haut
-                self.text_console(text=self.talon_en_main.get_all_cards()[2][0], debut_fin="debut"),
+                self.text_console(text=self.talon_en_main[0], debut_fin="debut"), 
                 
                 
                 # Coeurs Haut
@@ -247,12 +248,7 @@ class Game:
                 self.text_console(text=self.talon.taille(), debut_fin="fin"),
                 
                 # Carte 1 Bas
-                self.text_console(text=self.talon_en_main.get_all_cards()[0][1], debut_fin="fin"), 
-                
-                # Carte 2 Bas
-                self.text_console(text=self.talon_en_main.get_all_cards()[1][1], debut_fin="fin"),
-                # Carte 3 Bas
-                self.text_console(text=self.talon_en_main.get_all_cards()[2][1], debut_fin="fin"),
+                self.text_console(text=self.talon_en_main[1], debut_fin="fin"), 
                 
                 
                 # Coeurs Bas
@@ -269,11 +265,12 @@ class Game:
                    ))
         
         
+        print("\n\n")
         
         for nb_defausse in range(1, 5):
-            print(f"Défausse {nb_defausse} :\n")
-            print((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"┌───────" + "┌───────────┐")
-            print("│ ", end="")
+            print(self.color_text(text=f"     Défausse {nb_defausse} :\n", color="YELLOW"))
+            print(("     " + (self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"┌───────") + "┌───────────┐")
+            print("     │ ", end="")
             x = 1
             for carte in self.__getattribute__("defausse" + str(nb_defausse)).get_all_cards():
                 if x == self.__getattribute__("defausse" + str(nb_defausse)).taille():
@@ -282,9 +279,15 @@ class Game:
                     print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]) + "   │ ", debut_fin="fin"), end="")
                 x += 1
                 
-            [print(((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"│       " + "│           │")) for _ in range(4)]
-            print((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"└───────" + "└───────────┘\n")
+            [print("     " +  ((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"│       " + "│           │")) for _ in range(4)]
+            print("     " + (self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"└───────" + "└───────────┘\n")
         
+    
+    
+    def piocher(self):
+        self.talon_temp.push(self.talon_en_main)
+        self.talon_en_main = self.talon.pop()
+        self.interface()
 
                                 
                 
@@ -321,4 +324,10 @@ else:
 partie1 = Game()
 partie1.interface()
 
-
+while True:
+    touche = keyboard.read_key()
+    while touche not in ["p", "P"]:
+        touche = keyboard.read_key()
+    print(touche)
+    if touche in ["p", "P"]:
+        partie1.piocher()
