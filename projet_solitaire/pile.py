@@ -8,9 +8,15 @@ class Pile:
     Classe Pile implémentée avec un liste
     """
 
-    def __init__(self, valeurs:list=[]):
+    def __init__(self, valeurs=None):
         """Initialisation de la pile"""
-        self.valeurs = valeurs
+        self.valeurs = []
+        if valeurs:
+            if type(valeurs) == list:
+                for val in valeurs:
+                    self.valeurs.append(val)
+            else:
+                self.valeurs.append(valeurs)
 
     def pile_vide(self):
         """
@@ -56,14 +62,8 @@ class Pile:
         
 
 if __name__ == "__main__":
-    ma_pile = Pile([Noeud(12).set_ref(1), Noeud(14).set_ref(2),
-                    Noeud(8).set_ref(3), Noeud(7).set_ref(4),
-                    Noeud(19).set_ref(5), Noeud(22)])
-    print(ma_pile.pop())
-    ma_pile.push(42)
-    print(ma_pile.sommet())
-    print(ma_pile.pop())
-    print(ma_pile.taille())
-    for loop in range(5):
-        print(ma_pile.pop())
-    print(ma_pile.pile_vide())
+    pile1 = Pile([4, 3])
+    pile1.push(1)
+    pile2 = Pile()
+    pile2.push(5)
+    print(pile1.get_all_cards())

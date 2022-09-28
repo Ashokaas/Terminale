@@ -20,6 +20,8 @@ import keyboard
 import platform
 
 
+print(os.get_terminal_size())
+exit()
 
 
 
@@ -126,8 +128,7 @@ class Game:
         self.defausse1 = p.Pile()
         for d1 in range(4):
             self.defausse1.push(self.talon.pop())
-        print(self.defausse1.get_all_cards())
-        """
+        
         self.defausse2 = p.Pile()
         for d2 in range(3):
             self.defausse2.push(self.talon.pop())
@@ -136,7 +137,8 @@ class Game:
         for d3 in range(2):
             self.defausse3.push(self.talon.pop())
             
-        self.defausse4 = p.Pile()"""
+        self.defausse4 = p.Pile()
+        self.defausse4.push(self.talon.pop())
         
 
         # Définition des 4 familles
@@ -154,6 +156,11 @@ class Game:
         else:
             return False
 
+         
+    def symboles_familles(self, text):
+        text = str(text)
+        text = text.replace('Carreau', self.carreau).replace('Pique', self.pique).replace('Coeur', self.coeur).replace('Trèfle', self.trefle)
+        return text
                 
     
     def clear(self):
@@ -262,10 +269,22 @@ class Game:
                    ))
         
         
-        print((self.defausse1.taille()-1)*"┌───────" + "┌───────────┐")
-        print(self.defausse1.get_all_cards())
-        for carte in self.defausse1.get_all_cards():
-            print(carte)
+        
+        for nb_defausse in range(1, 5):
+            print(f"Défausse {nb_defausse} :\n")
+            print((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"┌───────" + "┌───────────┐")
+            print("│ ", end="")
+            x = 1
+            for carte in self.__getattribute__("defausse" + str(nb_defausse)).get_all_cards():
+                if x == self.__getattribute__("defausse" + str(nb_defausse)).taille():
+                    print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]) + "       │ ", debut_fin="fin"))
+                else:
+                    print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]) + "   │ ", debut_fin="fin"), end="")
+                x += 1
+                
+            [print(((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"│       " + "│           │")) for _ in range(4)]
+            print((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"└───────" + "└───────────┘\n")
+        
 
                                 
                 
