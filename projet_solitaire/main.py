@@ -18,6 +18,8 @@ import colorama as cl
 import os
 import keyboard
 import platform
+import time
+
 
 
 
@@ -150,9 +152,13 @@ class Game:
 
         # Définition des 4 familles
         self.piques = p.Pile()
+        self.piques.push(["0", "0"])
         self.carreaux = p.Pile()
+        self.carreaux.push(["0", "0"])
         self.trefles = p.Pile()
+        self.trefles.push(["0", "0"])
         self.coeurs = p.Pile()
+        self.coeurs.push(["0", "0"])
         
         self.couleurs_familles = {"Pique": "noir", "Coeur": "rouge", "Carreau": "rouge", "Trèfle": "noir"}
 
@@ -300,13 +306,13 @@ class Game:
                 
                 
                 # Coeurs Haut
-                self.text_console(text="0", debut_fin="debut"), 
+                self.text_console(text=self.coeurs.sommet()[0], debut_fin="debut"), 
                 # Piques Haut
-                self.text_console(text="0", debut_fin="debut"),
+                self.text_console(text=self.piques.sommet()[0], debut_fin="debut"),
                 # Carreaux Haut
-                self.text_console(text="0", debut_fin="debut"), 
+                self.text_console(text=self.carreaux.sommet()[0], debut_fin="debut"), 
                 # Trèfles Haut
-                self.text_console(text="0", debut_fin="debut"),
+                self.text_console(text=self.trefles.sommet()[0], debut_fin="debut"),
 
 
             # Bas
@@ -318,16 +324,16 @@ class Game:
                 
                 
                 # Coeurs Bas
-                self.text_console(text="0", debut_fin="fin"), 
+                self.text_console(text=self.coeurs.sommet()[1], debut_fin="fin"), 
                 
                 # Piques Bas
-                self.text_console(text="0", debut_fin="fin"),
+                self.text_console(text=self.piques.sommet()[1], debut_fin="fin"),
                 
                 # Carreaux Bas
-                self.text_console(text="0", debut_fin="fin"), 
+                self.text_console(text=self.carreaux.sommet()[1], debut_fin="fin"), 
                 
                 # Trèfles Bas
-                self.text_console(text="0", debut_fin="fin"),
+                self.text_console(text=self.trefles.sommet()[1], debut_fin="fin"),
                    ))
         
         
@@ -360,25 +366,24 @@ class Game:
             [print("     " +  ((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"│       " + "│           │")) for _ in range(4)]
             print("     " + (self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"└───────" + "└───────────┘\n")
         
-        print(self.carte_piochee)
     
     
     
     def piocher(self):
         """Piocher un carte dans le talon
         """
-        self.talon_temp.push(self.carte_piochee)
+        self.cartes_piochees_inutiles.push(self.carte_piochee)
         self.carte_piochee = self.talon.pop()
         self.interface()
     
         
     
     def carte_piochee_vers_defausse(self):
+        print("1, 2, 3, 4")
         touche_quelle_defausse = keyboard.read_key()
         while touche_quelle_defausse not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
             touche_quelle_defausse = keyboard.read_key()
             
-        print(touche_quelle_defausse)
             
         if touche_quelle_defausse in ["1", "&"] and self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse1.sommet()) == True:
                 self.defausse1.push(self.carte_piochee)
@@ -406,6 +411,7 @@ class Game:
             
             
     def carte_piochee_vers_familles(self):
+        print("1, 2, 3, 4")
         touche_quelle_famille = keyboard.read_key()
         while touche_quelle_famille not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
             touche_quelle_famille = keyboard.read_key()
@@ -415,17 +421,23 @@ class Game:
                 "3": "carreaux", '"': "carreaux",
                 "4": "trefles", "'": "trefles"}
         
+        print(self.carte_piochee)
+        print(self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet())
+        #exit()
         
         if self.carte_piochee[0] == "As":
             self.__getattribute__(dico_touche_familles[touche_quelle_famille]).push(self.carte_piochee)
             self.carte_piochee = ['0', '0', 'shown']
             self.interface()
+        
+        
+        elif self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.__getattribute__(dico_touche_familles[touche_quelle_famille])):
+            self.__getattribute__(dico_touche_familles[touche_quelle_famille]).push(self.carte_piochee)
+            self.carte_piochee = ['0', '0', 'shown']
+            self.interface()
+            
         else:
-            print("False")
-        
-        
-        if self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.__getattribute__(dico_touche_familles[touche_quelle_famille])):
-            print("oui")
+            print(False)
 
             
             
@@ -465,9 +477,14 @@ partie1 = Game()
 
 partie1.interface()
 while True:
+    # Indications
+    print("P : Piocher\nX : Arrêter la partie\nA : Carte piochée vers défausse\nB : Carte piochée vers familles")
+    
+    # Sécurité pour empêcher l'appui successif
+    time.sleep(1)
+    
     
     touche = keyboard.read_key()
-    
     while touche not in ["p", "P", "x", "X", "a", "A", "b", "B"]:
         touche = keyboard.read_key()
     print(touche)
