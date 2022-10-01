@@ -415,7 +415,8 @@ class Game:
                 self.interface()
         
         else:
-            print(False)
+            self.interface()
+            print("Action impossible !")
             
             
             
@@ -430,9 +431,6 @@ class Game:
                 "3": "carreaux", '"': "carreaux",
                 "4": "trefles", "'": "trefles"}
         
-        print(self.carte_piochee)
-        print(self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet())
-        #exit()
         
         if self.carte_piochee[0] == "As":
             if self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet()[2] == self.carte_piochee[1]:
@@ -447,37 +445,9 @@ class Game:
             self.interface()
             
         else:
-            print(False)
+            self.interface()
+            print("Action impossible !")
 
-
-
-
-
-
-
-"""
-fenetre = Root()
-# Clear la console
-#clear()
-
-# Affichage du nom du jeu
-print("‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾")
-print(Fore.YELLOW + "   Jouer au Solitaire (32/52) ?      " + Fore.WHITE)
-print("___________________________________")
-
-# Demande à l'utilisateur le nombre de cartes qu'il souhaite
-nb_cartes = input("\nNombre de cartes (32/52) : ")
-
-# Si il a choisi 32 ou 52 la partie se lance
-if nb_cartes in ["32", "52"]:
-    partie = Game(nb_cartes)
-
-# Sinon elle d'arrête
-else:
-    print('Nombre de cartes invalide')
-    print('Arrêt du programme')
-    exit()
-"""
 
 
 
@@ -516,6 +486,4 @@ while True:
         partie1.mouvements += 1
         partie1.carte_piochee_vers_familles()
 
-
-#print(partie1.verifier_carte(carte_a_deplacer=["8", "Trèfle"], carte_inferieur=["8", "Carreau"]))
 
