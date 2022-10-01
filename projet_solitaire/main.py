@@ -11,6 +11,7 @@ from PIL import ImageTk, Image
 import Carte
 import JeuCarte
 import pile as p
+import file as f
 
 # Supplémentaires
 import random
@@ -112,38 +113,39 @@ class Game:
         self.pique =  "♠"
         self.coeur = "♥"
         self.trefle = "♣"
-
+        
+        
+        self.mouvements = 0
 
         # Définition du jeu en fonction du nombre de cartes
         self.jeu_cartes = JeuCarte.JeuCarte(self.nb_cartes)
         self.jeu_cartes.melangerJeu()
 
         # Définition du talon de la carte piochée et des cartes piochées ignorées
-        self.talon = p.Pile(self.jeu_cartes.getJeu())
-        self.carte_piochee = self.talon.pop()
-        self.cartes_piochees_inutiles = p.Pile()
+        self.talon = f.File(self.jeu_cartes.getJeu())
+        self.carte_piochee = self.talon.retire()
 
         # Définition des 4 défausses
         self.defausse1 = p.Pile()
         for _ in range(4):
-            c = self.talon.pop()
+            c = self.talon.retire()
             c[2] = 'hidden'
             self.defausse1.push(c)
             
         self.defausse2 = p.Pile()
         for _ in range(3):
-            c = self.talon.pop()
+            c = self.talon.retire()
             c[2] = 'hidden'
             self.defausse2.push(c)
             
         self.defausse3 = p.Pile()
         for _ in range(2):
-            c = self.talon.pop()
+            c = self.talon.retire()
             c[2] = 'hidden'
             self.defausse3.push(c)
             
         self.defausse4 = p.Pile()
-        c = self.talon.pop()
+        c = self.talon.retire()
         c[2] = 'hidden'
         self.defausse4.push(c)
         #print(self.defausse1.get_all_cards())
@@ -152,13 +154,13 @@ class Game:
 
         # Définition des 4 familles
         self.piques = p.Pile()
-        self.piques.push(["0", "0"])
+        self.piques.push(["0", "0", "Pique"])
         self.carreaux = p.Pile()
-        self.carreaux.push(["0", "0"])
+        self.carreaux.push(["0", "0", "Carreau"])
         self.trefles = p.Pile()
-        self.trefles.push(["0", "0"])
+        self.trefles.push(["0", "0", "Trèfle"])
         self.coeurs = p.Pile()
-        self.coeurs.push(["0", "0"])
+        self.coeurs.push(["0", "0", "Coeur"])
         
         self.couleurs_familles = {"Pique": "noir", "Coeur": "rouge", "Carreau": "rouge", "Trèfle": "noir"}
 
@@ -174,6 +176,10 @@ class Game:
         else:
             return False
 
+
+
+    
+    
          
     def symboles_familles(self, text):
         """Remplace le texte par le symbole correspondant (ex: "Carreau" -> "♦")
@@ -372,8 +378,11 @@ class Game:
     def piocher(self):
         """Piocher un carte dans le talon
         """
-        self.cartes_piochees_inutiles.push(self.carte_piochee)
-        self.carte_piochee = self.talon.pop()
+        if self.carte_piochee == ['0', '0', 'shown']:
+            self.carte_piochee = self.talon.retire()
+        else:
+            self.talon.ajout(self.carte_piochee)
+            self.carte_piochee = self.talon.retire()
         self.interface()
     
         
@@ -426,9 +435,10 @@ class Game:
         #exit()
         
         if self.carte_piochee[0] == "As":
-            self.__getattribute__(dico_touche_familles[touche_quelle_famille]).push(self.carte_piochee)
-            self.carte_piochee = ['0', '0', 'shown']
-            self.interface()
+            if self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet()[2] == self.carte_piochee[1]:
+                self.__getattribute__(dico_touche_familles[touche_quelle_famille]).push(self.carte_piochee)
+                self.carte_piochee = ['0', '0', 'shown']
+                self.interface()
         
         
         elif self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.__getattribute__(dico_touche_familles[touche_quelle_famille])):
@@ -439,11 +449,10 @@ class Game:
         else:
             print(False)
 
-            
-            
 
-                
-            
+
+
+
 
 
 """
@@ -477,6 +486,7 @@ partie1 = Game()
 
 partie1.interface()
 while True:
+    print(f"Mouvements : {partie1.mouvements}")
     # Indications
     print("P : Piocher\nX : Arrêter la partie\nA : Carte piochée vers défausse\nB : Carte piochée vers familles")
     
@@ -490,6 +500,7 @@ while True:
     print(touche)
     
     if touche in ["p", "P"]:
+        partie1.mouvements += 1
         partie1.piocher()
         
     elif touche in ["x", "X"]:
@@ -498,9 +509,11 @@ while True:
         exit()
         
     elif touche in ["a", "A"]:
+        partie1.mouvements += 1
         partie1.carte_piochee_vers_defausse()
         
     elif touche in ["b", "B"]:
+        partie1.mouvements += 1
         partie1.carte_piochee_vers_familles()
 
 
