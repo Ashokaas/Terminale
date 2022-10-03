@@ -2,10 +2,6 @@
 #      IMPORTATIONS DES LIBRAIRIES
 # =====================================
 
-# Tkinter
-from tkinter import *
-from tkinter import ttk, filedialog
-from PIL import ImageTk, Image
 
 # Necessaires au bon fonctionnement d'un jeu de carte
 import Carte
@@ -292,7 +288,7 @@ class Game:
         self.clear()
             
         
-        print("""\n
+        print("""
                     Talon           │       Carte Piochée       ││          Coeurs            Piques           Carreaux           Trèfles                       
                 ┌───────────┐       │       ┌───────────┐       ││       ┌───────────┐     ┌───────────┐     ┌───────────┐     ┌───────────┐                     
                 │ {}        │       │       │ {}        │       ││       │ {}        │     │ {}        │     │ {}        │     │ {}        │                     
@@ -450,6 +446,53 @@ class Game:
 
 
 
+    def carte_defausse_vers_familles(self):
+        print("1, 2, 3, 4")
+        touche_quelle_defausse = keyboard.read_key()
+        dico_touche_defausse = {"1": "1", "&": "1", 
+                "2": "2", "é": "2",
+                "3": "3", '"': "3",
+                "4": "4", "'": "4"}
+                
+        while touche_quelle_defausse not in ["1", "2", "3", "4", "&", "é", '"', "'"] and True:
+            touche_quelle_defausse = keyboard.read_key()
+
+        
+        while self.__getattribute__("defausse" + dico_touche_defausse[str(touche_quelle_defausse)]).pile_vide() == True:
+            touche_quelle_defausse = keyboard.read_key()
+        
+        time.sleep(1)
+        print("1, 2, 3, 4")
+        touche_quelle_famille = keyboard.read_key()
+        while touche_quelle_famille not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
+            touche_quelle_famille = keyboard.read_key()
+        
+        dico_touche_familles = {"1": "coeurs", "&": "coeurs", 
+                "2": "piques", "é": "piques",
+                "3": "carreaux", '"': "carreaux",
+                "4": "trefles", "'": "trefles"}
+        
+        print(touche_quelle_defausse, touche_quelle_famille)
+        defausse = self.__getattribute__("defausse" + dico_touche_defausse[str(touche_quelle_defausse)])
+        famille = self.__getattribute__(dico_touche_familles[touche_quelle_famille])
+
+
+        if defausse.sommet()[0] == "As":
+            if defausse.sommet()[1] == famille.sommet()[2]:
+                famille.push(defausse.pop())
+                self.interface()
+                exit()
+        
+
+            
+        else:
+            self.interface()
+            print("Action impossible !")
+
+
+
+
+
 
 
 partie1 = Game()
@@ -458,14 +501,14 @@ partie1.interface()
 while True:
     print(f"Mouvements : {partie1.mouvements}")
     # Indications
-    print("P : Piocher\nX : Arrêter la partie\nA : Carte piochée vers défausse\nB : Carte piochée vers familles")
+    print("P : Piocher\nX : Arrêter la partie\nA : Carte piochée vers défausse\nB : Carte piochée vers familles\nC : Carte défausse vers familles")
     
     # Sécurité pour empêcher l'appui successif
     time.sleep(1)
     
     
     touche = keyboard.read_key()
-    while touche not in ["p", "P", "x", "X", "a", "A", "b", "B"]:
+    while touche not in ["p", "P", "x", "X", "a", "A", "b", "B", "c", "C"]:
         touche = keyboard.read_key()
     print(touche)
     
@@ -479,11 +522,10 @@ while True:
         exit()
         
     elif touche in ["a", "A"]:
-        partie1.mouvements += 1
         partie1.carte_piochee_vers_defausse()
         
     elif touche in ["b", "B"]:
-        partie1.mouvements += 1
         partie1.carte_piochee_vers_familles()
 
-
+    elif touche in ["c", "C"]:
+        partie1.carte_defausse_vers_familles()
