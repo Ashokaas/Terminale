@@ -10,7 +10,6 @@ import pile as p
 import file as f
 
 # Supplémentaires
-import random
 import colorama as cl
 import os
 import keyboard
@@ -19,50 +18,9 @@ import time
 
 
 
-
-
-# class Root
-class Console:
-    
-    
-        
-        
-            
-            
-    """
-    def aficher_carte(self, famille:str="?", valeur:str="?"):
-        Affiche une carte caspécifique
-
-        Args:
-            famille (str, optional): Famille de carte (carreau, trefle, pique, coeur). Defaults to "?".
-            valeur (str, optional): Valeur de la carte (5, 8, K, etc). Defaults to "?".
-        
-        
-        # Première ligne
-        print("┌" + "─"*11 + "┐")
-        
-        # Deuxième ligne
-        print(f"│ {valeur}{' '*(10-len(valeur))}│")
-                
-        # Troisième ligne
-        print(f"│{' '*11}│")
-        
-        # Ligne du milieu (Quatrième)
-        print(f"│{' '*5}{famille}{' '*5}│")
-        
-        # Antépénultième ligne
-        print(f"│{' '*11}│")
-        
-        # Avant dernière ligne
-        print(f"│{' '*(10-len(valeur))}{valeur} │")
-                
-        # Dernière ligne
-        print("└" + "─"*11 + "┘")"""
-        
-
-
-
-# class Game
+# =====================================
+#             class Game
+# =====================================
 class Game:
 
     def __init__(self):
@@ -111,7 +69,7 @@ class Game:
         self.trefle = "♣"
         
         
-        self.mouvements = 0
+        self.score = 0
 
         # Définition du jeu en fonction du nombre de cartes
         self.jeu_cartes = JeuCarte.JeuCarte(self.nb_cartes)
@@ -121,7 +79,7 @@ class Game:
         self.talon = f.File(self.jeu_cartes.getJeu())
         self.carte_piochee = self.talon.retire()
 
-        # Définition des 4 défausses
+        # Définition des 4 défausses ('hidden' pour spécifier qu'on cache la carte)
         self.defausse1 = p.Pile()
         for _ in range(4):
             c = self.talon.retire()
@@ -168,7 +126,6 @@ class Game:
         """
         # Si la somme des familles (+ 4 car on ajouté des cartes nulles au début) est égale au nb de cartes du jeu alors c'est gagné
         if int(self.nb_cartes) == self.piques.taille() + self.carreaux.taille() + self.trefles.taille() + self.coeurs.taille() + 4:
-            return True
             print("""\n\n
                 ██╗░░░██╗██╗░█████╗░████████╗░█████╗░██╗██████╗░███████╗
                 ██║░░░██║██║██╔══██╗╚══██╔══╝██╔══██╗██║██╔══██╗██╔════╝
@@ -176,7 +133,8 @@ class Game:
                 ░╚████╔╝░██║██║░░██╗░░░██║░░░██║░░██║██║██╔══██╗██╔══╝░░
                 ░░╚██╔╝░░██║╚█████╔╝░░░██║░░░╚█████╔╝██║██║░░██║███████╗
                 ░░░╚═╝░░░╚═╝░╚════╝░░░░╚═╝░░░░╚════╝░╚═╝╚═╝░░╚═╝╚══════╝""")
-            
+
+            print(f"Score : {self.score}")
             print("Appuyez sur 'espace' pour quitter !")
             keyboard.wait('space')
             exit()
@@ -184,10 +142,7 @@ class Game:
 
 
 
-    
-    
-         
-    def symboles_familles(self, text):
+    def symboles_familles(self, texte):
         """Remplace le texte par le symbole correspondant (ex: "Carreau" -> "♦")
 
         Args:
@@ -196,78 +151,59 @@ class Game:
         Returns:
             str: texte
         """
-        text = str(text)
-        text = text.replace('Carreau', self.carreau).replace('Pique', self.pique).replace('Coeur', self.coeur).replace('Trèfle', self.trefle)
-        return text
+        texte = str(texte)
+        texte = texte.replace('Carreau', self.carreau).replace('Pique', self.pique).replace('Coeur', self.coeur).replace('Trèfle', self.trefle)
+        return texte
     
     
-    def texte_couleurs_familles(self, text):
+    
+    
+    def texte_couleurs_familles(self, texte):
         """Met en rouge si la famille est carreau ou coeur
 
         Args:
-            text: text
+            texte: texte
 
         Returns:
-            text: text
+            texte: texte
         """
-        if self.carreau in text or self.coeur in text:
-            return self.color_text(text=text, color="RED")
+        if self.carreau in texte or self.coeur in texte:
+            return self.color_text(text=texte, color="RED")
         else:
-            return text
+            return texte
+        
+        
         
     
-    def verifier_carte_defausse(self, carte_a_deplacer:list, carte_inferieur:list):
+    def verifier_carte(self, carte_a_deplacer:list, carte_inferieur:list, defausse_ou_famille:str):
         """Vérifie si un déplacement de carte est possible
 
         Args:
             carte_a_deplacer (list): Carte qui va être déplacée sur une autre
             carte_inferieur (list): Carte qui va reçevoir la carte à déplacer
+            defausse_ou_famille (str): Si la carte est déplacée vers une défause ou une famille
 
         Returns:
             (bool): True si possible / False si impossible
         """
-        
-        if carte_a_deplacer[0] == "7":
-            return False
-
-        
-        for x in range(len(self.cartes)):
-            
-            if carte_a_deplacer[0] == self.cartes[x] and carte_inferieur[0] == self.cartes[x+1]:
-                if self.couleurs_familles[carte_a_deplacer[1]] != self.couleurs_familles[carte_inferieur[1]]:
-                    return True
-        
-        return False
-
-    
-    def verifier_carte_famille(self, carte_a_deplacer:list, carte_inferieur:list):
-        """Vérifie si un déplacement de carte est possible
-
-        Args:
-            carte_a_deplacer (list): Carte qui va être déplacée sur une autre
-            carte_inferieur (list): Carte qui va reçevoir la carte à déplacer
-
-        Returns:
-            (bool): True si possible / False si impossible
         """
-        
         if carte_a_deplacer[0] == "7":
-            return False
-
-        print(carte_a_deplacer, carte_inferieur)
-        """if carte_a_deplacer[0] == "8":
-            exit()"""
-        
+            return False"""
+        # Pour toutes les cartes du jeu
         for x in range(len(self.cartes)):
-            
-            if carte_a_deplacer[0] == self.cartes[x] and carte_inferieur[0] == self.cartes[x-1]:
-                if self.couleurs_familles[carte_a_deplacer[1]] == self.couleurs_familles[carte_inferieur[1]]:
-                    self.mouvements += 2
-                    return True
-        
+            if defausse_ou_famille == "defausse":
+                # Quand on atteint la carte à déplacer
+                if carte_a_deplacer[0] == self.cartes[x] and carte_inferieur[0] == self.cartes[x+1]:
+                    if self.couleurs_familles[carte_a_deplacer[1]] != self.couleurs_familles[carte_inferieur[1]]:
+                        return True
+            elif defausse_ou_famille == "famille":
+                if carte_a_deplacer[0] == self.cartes[x] and carte_inferieur[0] == self.cartes[x-1]:
+                    if self.couleurs_familles[carte_a_deplacer[1]] == self.couleurs_familles[carte_inferieur[1]]:
+                        self.score += 2
+                        return True
         return False
-    
-    
+
+        
     
     
     def clear(self):
@@ -381,31 +317,35 @@ class Game:
         print("\n\n")
         
         for nb_defausse in range(1, 5):
-            
-            if self.__getattribute__("defausse" + str(nb_defausse)).sommet()[2] == "hidden":
-                self.__getattribute__("defausse" + str(nb_defausse)).sommet()[2] = "shown"
+            if self.__getattribute__("defausse" + str(nb_defausse)).pile_vide() == True:
+                print(self.color_text(text=f"     Défausse {nb_defausse} :\n", color="YELLOW"))
+                print('\n'*7)
+
+            else:
+                if self.__getattribute__("defausse" + str(nb_defausse)).sommet()[2] == "hidden":
+                    self.__getattribute__("defausse" + str(nb_defausse)).sommet()[2] = "shown"
+                    
                 
-            
-            print(self.color_text(text=f"     Défausse {nb_defausse} :\n", color="YELLOW"))
-            print(("     " + (self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"┌───────") + "┌───────────┐")
-            print("     │ ", end="")
-            x = 1
-            for carte in self.__getattribute__("defausse" + str(nb_defausse)).get_all_cards():
-                if carte[2] == "hidden":
-                    if x == self.__getattribute__("defausse" + str(nb_defausse)).taille():
-                        print("?  " + "       │ ")
+                print(self.color_text(text=f"     Défausse {nb_defausse} :\n", color="YELLOW"))
+                print(("     " + (self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"┌───────") + "┌───────────┐")
+                print("     │ ", end="")
+                x = 1
+                for carte in self.__getattribute__("defausse" + str(nb_defausse)).get_all_cards():
+                    if carte[2] == "hidden":
+                        if x == self.__getattribute__("defausse" + str(nb_defausse)).taille():
+                            print("?  " + "       │ ")
+                        else:
+                            print("?  " + "   │ ", end="")
+                        x += 1
                     else:
-                        print("?  " + "   │ ", end="")
-                    x += 1
-                else:
-                    if x == self.__getattribute__("defausse" + str(nb_defausse)).taille():
-                        print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]), debut_fin="debut")+"      │")
-                    else:
-                        print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]), debut_fin="debut")+ "   │ ", end="")
-                    x += 1
-                
-            [print("     " +  ((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"│       " + "│           │")) for _ in range(4)]
-            print("     " + (self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"└───────" + "└───────────┘\n")
+                        if x == self.__getattribute__("defausse" + str(nb_defausse)).taille():
+                            print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]), debut_fin="debut")+"      │")
+                        else:
+                            print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]), debut_fin="debut")+ "   │ ", end="")
+                        x += 1
+                    
+                [print("     " +  ((self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"│       " + "│           │")) for _ in range(4)]
+                print("     " + (self.__getattribute__("defausse" + str(nb_defausse)).taille()-1)*"└───────" + "└───────────┘\n")
         
     
     
@@ -423,28 +363,28 @@ class Game:
         
     
     def carte_piochee_vers_defausse(self):
-        print("1, 2, 3, 4")
+        print("Vers quelle défausse (1, 2, 3, 4) ?")
         touche_quelle_defausse = keyboard.read_key()
         while touche_quelle_defausse not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
             touche_quelle_defausse = keyboard.read_key()
             
             
-        if touche_quelle_defausse in ["1", "&"] and self.verifier_carte_defausse(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse1.sommet()) == True:
+        if touche_quelle_defausse in ["1", "&"] and (self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse1.sommet(), defausse_ou_famille="defausse") == True or self.defausse1.pile_vide() == True):
                 self.defausse1.push(self.carte_piochee)
                 self.carte_piochee = ['0', '0', 'shown']
                 self.interface()
                 
-        elif touche_quelle_defausse in ["2", "é"] and self.verifier_carte_defausse(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse2.sommet()) == True:
+        elif touche_quelle_defausse in ["2", "é"] and (self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse2.sommet(), defausse_ou_famille="defausse") == True or self.defausse2.pile_vide() == True):
                 self.defausse2.push(self.carte_piochee)
                 self.carte_piochee = ['0', '0', 'shown']
                 self.interface()
                 
-        elif touche_quelle_defausse in ["3", '"'] and self.verifier_carte_defausse(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse3.sommet()) == True:
+        elif touche_quelle_defausse in ["3", '"'] and (self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse3.sommet(), defausse_ou_famille="defausse") == True or self.defausse2.pile_vide() == True):
                 self.defausse3.push(self.carte_piochee)
                 self.carte_piochee = ['0', '0', 'shown']
                 self.interface()
                 
-        elif touche_quelle_defausse in ["4", "'"] and self.verifier_carte_defausse(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse4.sommet()) == True:
+        elif touche_quelle_defausse in ["4", "'"] and (self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse4.sommet(), defausse_ou_famille="defausse") == True or self.defausse2.pile_vide() == True):
                 self.defausse4.push(self.carte_piochee)
                 self.carte_piochee = ['0', '0', 'shown']
                 self.interface()
@@ -456,7 +396,7 @@ class Game:
             
             
     def carte_piochee_vers_familles(self):
-        print("1, 2, 3, 4")
+        print("Vers quelle famille (1, 2, 3, 4) ?")
         touche_quelle_famille = keyboard.read_key()
         while touche_quelle_famille not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
             touche_quelle_famille = keyboard.read_key()
@@ -481,7 +421,7 @@ class Game:
                     self.interface()
         
         
-        elif self.verifier_carte_famille(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet()):
+        if self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet(), defausse_ou_famille="famille"):
             self.__getattribute__(dico_touche_familles[touche_quelle_famille]).push(self.carte_piochee)
             self.carte_piochee = ['0', '0', 'shown']
             self.interface()
@@ -493,7 +433,7 @@ class Game:
 
 
     def carte_defausse_vers_familles(self):
-        print("1, 2, 3, 4")
+        print("De quelle défausse (1, 2, 3, 4) ?")
         touche_quelle_defausse = keyboard.read_key()
         dico_touche_defausse = {"1": "1", "&": "1", 
                 "2": "2", "é": "2",
@@ -508,7 +448,7 @@ class Game:
             touche_quelle_defausse = keyboard.read_key()
         
         time.sleep(1)
-        print("1, 2, 3, 4")
+        print("Vers quelle famille (1, 2, 3, 4) ?")
         touche_quelle_famille = keyboard.read_key()
         while touche_quelle_famille not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
             touche_quelle_famille = keyboard.read_key()
@@ -527,22 +467,21 @@ class Game:
                 if defausse.sommet()[1] == famille.sommet()[2]:
                     famille.push(defausse.pop())
                     self.interface()
-                    exit()
+                    
 
         elif self.nb_cartes == "52":
             if defausse.sommet()[0] == "As":
                 if defausse.sommet()[1] == famille.sommet()[2]:
                     famille.push(defausse.pop())
                     self.interface()
-                    exit()
+                    
 
-        elif self.verifier_carte_defausse(carte_a_deplacer=defausse.sommet(), carte_inferieur=famille.sommet()):
+        elif self.verifier_carte(carte_a_deplacer=defausse.sommet(), carte_inferieur=famille.sommet(), defausse_ou_famille="defausse"):
             famille.push(defausse.pop())
             self.interface()
-            exit()
+            
         
 
-            
         else:
             self.interface()
             print("Action impossible !")
@@ -557,7 +496,7 @@ partie1 = Game()
 
 partie1.interface()
 while True:
-    print(f"Mouvements : {partie1.mouvements}")
+    print(f"Score : {partie1.score}")
     # Indications
     print("T : Piocher\nD : Déplacer une carte\nX : Arrêter la partie\n")
     
@@ -571,7 +510,7 @@ while True:
     
     # Si touche = T
     if touche in ["t", "T"]:
-        partie1.mouvements -= 1
+        partie1.score -= 1
         partie1.piocher()
 
     # Si touche = D

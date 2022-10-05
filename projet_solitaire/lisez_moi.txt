@@ -1,0 +1,10 @@
+Le programme est mieux affiché dans un terminal à échelle réduite.
+
+Les librairies suivantes sont nécessaires:
+  - colorama
+  - os
+  - keyboard
+  - platform
+  - time
+
+Sur Linux il faut être en root pour pouvoir utiliser keyboard.
