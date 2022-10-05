@@ -97,12 +97,12 @@ class Game:
             keyboard_nb_cartes = keyboard.read_key()
             
         # Return le nombre de cartes
-        if keyboard.read_key() in ["1", "&"]:
+        if keyboard_nb_cartes in ["1", "&"]:
             self.nb_cartes = "32"
             self.cartes = ["7", "8", "9", "10", "V", "D", "R", "As"]
-        elif keyboard.read_key() in ["2", "é"]:
+        elif keyboard_nb_cartes in ["2", "é"]:
             self.nb_cartes = "52"
-            self.cartes = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "V", "D", "R", "As"]
+            self.cartes = ["As", "2", "3", "4", "5", "6", "7", "8", "9", "10", "V", "D", "R"]
             
     
         self.carreau = "♦"
@@ -161,16 +161,26 @@ class Game:
         self.couleurs_familles = {"Pique": "noir", "Coeur": "rouge", "Carreau": "rouge", "Trèfle": "noir"}
 
 
+
+
     def verifier_victoire(self):
         """Vérifie si la partie a été gagnée
-
-        Returns:
-            (bool)": True si oui / False si non
         """
-        if int(self.nb_cartes) == self.piques.taille() + self.carreaux.taille() + self.trefles.taille() + self.coeurs.taille():
+        # Si la somme des familles (+ 4 car on ajouté des cartes nulles au début) est égale au nb de cartes du jeu alors c'est gagné
+        if int(self.nb_cartes) == self.piques.taille() + self.carreaux.taille() + self.trefles.taille() + self.coeurs.taille() + 4:
             return True
-        else:
-            return False
+            print("""\n\n
+                ██╗░░░██╗██╗░█████╗░████████╗░█████╗░██╗██████╗░███████╗
+                ██║░░░██║██║██╔══██╗╚══██╔══╝██╔══██╗██║██╔══██╗██╔════╝
+                ╚██╗░██╔╝██║██║░░╚═╝░░░██║░░░██║░░██║██║██████╔╝█████╗░░
+                ░╚████╔╝░██║██║░░██╗░░░██║░░░██║░░██║██║██╔══██╗██╔══╝░░
+                ░░╚██╔╝░░██║╚█████╔╝░░░██║░░░╚█████╔╝██║██║░░██║███████╗
+                ░░░╚═╝░░░╚═╝░╚════╝░░░░╚═╝░░░░╚════╝░╚═╝╚═╝░░╚═╝╚══════╝""")
+            
+            print("Appuyez sur 'espace' pour quitter !")
+            keyboard.wait('space')
+            exit()
+            
 
 
 
@@ -206,7 +216,7 @@ class Game:
             return text
         
     
-    def verifier_carte(self, carte_a_deplacer:list, carte_inferieur:list):
+    def verifier_carte_defausse(self, carte_a_deplacer:list, carte_inferieur:list):
         """Vérifie si un déplacement de carte est possible
 
         Args:
@@ -217,13 +227,42 @@ class Game:
             (bool): True si possible / False si impossible
         """
         
-        if carte_a_deplacer[0] == "As":
+        if carte_a_deplacer[0] == "7":
             return False
+
         
         for x in range(len(self.cartes)):
             
             if carte_a_deplacer[0] == self.cartes[x] and carte_inferieur[0] == self.cartes[x+1]:
                 if self.couleurs_familles[carte_a_deplacer[1]] != self.couleurs_familles[carte_inferieur[1]]:
+                    return True
+        
+        return False
+
+    
+    def verifier_carte_famille(self, carte_a_deplacer:list, carte_inferieur:list):
+        """Vérifie si un déplacement de carte est possible
+
+        Args:
+            carte_a_deplacer (list): Carte qui va être déplacée sur une autre
+            carte_inferieur (list): Carte qui va reçevoir la carte à déplacer
+
+        Returns:
+            (bool): True si possible / False si impossible
+        """
+        
+        if carte_a_deplacer[0] == "7":
+            return False
+
+        print(carte_a_deplacer, carte_inferieur)
+        """if carte_a_deplacer[0] == "8":
+            exit()"""
+        
+        for x in range(len(self.cartes)):
+            
+            if carte_a_deplacer[0] == self.cartes[x] and carte_inferieur[0] == self.cartes[x-1]:
+                if self.couleurs_familles[carte_a_deplacer[1]] == self.couleurs_familles[carte_inferieur[1]]:
+                    self.mouvements += 2
                     return True
         
         return False
@@ -390,22 +429,22 @@ class Game:
             touche_quelle_defausse = keyboard.read_key()
             
             
-        if touche_quelle_defausse in ["1", "&"] and self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse1.sommet()) == True:
+        if touche_quelle_defausse in ["1", "&"] and self.verifier_carte_defausse(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse1.sommet()) == True:
                 self.defausse1.push(self.carte_piochee)
                 self.carte_piochee = ['0', '0', 'shown']
                 self.interface()
                 
-        elif touche_quelle_defausse in ["2", "é"] and self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse2.sommet()) == True:
+        elif touche_quelle_defausse in ["2", "é"] and self.verifier_carte_defausse(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse2.sommet()) == True:
                 self.defausse2.push(self.carte_piochee)
                 self.carte_piochee = ['0', '0', 'shown']
                 self.interface()
                 
-        elif touche_quelle_defausse in ["3", '"'] and self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse3.sommet()) == True:
+        elif touche_quelle_defausse in ["3", '"'] and self.verifier_carte_defausse(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse3.sommet()) == True:
                 self.defausse3.push(self.carte_piochee)
                 self.carte_piochee = ['0', '0', 'shown']
                 self.interface()
                 
-        elif touche_quelle_defausse in ["4", "'"] and self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse4.sommet()) == True:
+        elif touche_quelle_defausse in ["4", "'"] and self.verifier_carte_defausse(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse4.sommet()) == True:
                 self.defausse4.push(self.carte_piochee)
                 self.carte_piochee = ['0', '0', 'shown']
                 self.interface()
@@ -427,15 +466,22 @@ class Game:
                 "3": "carreaux", '"': "carreaux",
                 "4": "trefles", "'": "trefles"}
         
+        if self.nb_cartes == "32":
+            if self.carte_piochee[0] == "7":
+                if self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet()[2] == self.carte_piochee[1]:
+                    self.__getattribute__(dico_touche_familles[touche_quelle_famille]).push(self.carte_piochee)
+                    self.carte_piochee = ['0', '0', 'shown']
+                    self.interface()
         
-        if self.carte_piochee[0] == "As":
-            if self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet()[2] == self.carte_piochee[1]:
-                self.__getattribute__(dico_touche_familles[touche_quelle_famille]).push(self.carte_piochee)
-                self.carte_piochee = ['0', '0', 'shown']
-                self.interface()
+        elif self.nb_cartes == "52":
+            if self.carte_piochee[0] == "As":
+                if self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet()[2] == self.carte_piochee[1]:
+                    self.__getattribute__(dico_touche_familles[touche_quelle_famille]).push(self.carte_piochee)
+                    self.carte_piochee = ['0', '0', 'shown']
+                    self.interface()
         
         
-        elif self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.__getattribute__(dico_touche_familles[touche_quelle_famille])):
+        elif self.verifier_carte_famille(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.__getattribute__(dico_touche_familles[touche_quelle_famille]).sommet()):
             self.__getattribute__(dico_touche_familles[touche_quelle_famille]).push(self.carte_piochee)
             self.carte_piochee = ['0', '0', 'shown']
             self.interface()
@@ -476,12 +522,24 @@ class Game:
         defausse = self.__getattribute__("defausse" + dico_touche_defausse[str(touche_quelle_defausse)])
         famille = self.__getattribute__(dico_touche_familles[touche_quelle_famille])
 
+        if self.nb_cartes == "32":
+            if defausse.sommet()[0] == "7":
+                if defausse.sommet()[1] == famille.sommet()[2]:
+                    famille.push(defausse.pop())
+                    self.interface()
+                    exit()
 
-        if defausse.sommet()[0] == "As":
-            if defausse.sommet()[1] == famille.sommet()[2]:
-                famille.push(defausse.pop())
-                self.interface()
-                exit()
+        elif self.nb_cartes == "52":
+            if defausse.sommet()[0] == "As":
+                if defausse.sommet()[1] == famille.sommet()[2]:
+                    famille.push(defausse.pop())
+                    self.interface()
+                    exit()
+
+        elif self.verifier_carte_defausse(carte_a_deplacer=defausse.sommet(), carte_inferieur=famille.sommet()):
+            famille.push(defausse.pop())
+            self.interface()
+            exit()
         
 
             
@@ -501,31 +559,47 @@ partie1.interface()
 while True:
     print(f"Mouvements : {partie1.mouvements}")
     # Indications
-    print("P : Piocher\nX : Arrêter la partie\nA : Carte piochée vers défausse\nB : Carte piochée vers familles\nC : Carte défausse vers familles")
+    print("T : Piocher\nD : Déplacer une carte\nX : Arrêter la partie\n")
     
     # Sécurité pour empêcher l'appui successif
     time.sleep(1)
     
-    
+    # Enrigistrment touche
     touche = keyboard.read_key()
-    while touche not in ["p", "P", "x", "X", "a", "A", "b", "B", "c", "C"]:
+    while touche not in ["x", "X", "d", "D", "t", "T"]:
         touche = keyboard.read_key()
-    print(touche)
     
-    if touche in ["p", "P"]:
-        partie1.mouvements += 1
+    # Si touche = T
+    if touche in ["t", "T"]:
+        partie1.mouvements -= 1
         partie1.piocher()
+
+    # Si touche = D
+    if touche in ["d", "D"]:
+        print('A : Carte piochée vers défausse\nB : Carte piochée vers familles\nC : Carte défausse vers familles')
+        # Sécurité pour empêcher l'appui successif
+        time.sleep(1)
+        # Enrigistrment touche
+        touche = keyboard.read_key()
+        while touche not in ["a", "A", "b", "B", "c", "C"]:
+            touche = keyboard.read_key()
+
+        if touche in ["a", "A"]:
+            partie1.carte_piochee_vers_defausse()
         
+        elif touche in ["b", "B"]:
+            partie1.carte_piochee_vers_familles()
+
+        elif touche in ["c", "C"]:
+            partie1.carte_defausse_vers_familles()
+
+    # Si touche = X
     elif touche in ["x", "X"]:
         partie1.clear()
         print("Arrêt du programme")
         exit()
-        
-    elif touche in ["a", "A"]:
-        partie1.carte_piochee_vers_defausse()
-        
-    elif touche in ["b", "B"]:
-        partie1.carte_piochee_vers_familles()
 
-    elif touche in ["c", "C"]:
-        partie1.carte_defausse_vers_familles()
+    partie1.verifier_victoire()
+    
+        
+    
