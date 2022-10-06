@@ -314,7 +314,7 @@ class Game:
                    ))
         
         
-        print("\n\n")
+        print("")
         
         for nb_defausse in range(1, 5):
             if self.__getattribute__("defausse" + str(nb_defausse)).pile_vide() == True:
@@ -367,27 +367,22 @@ class Game:
         touche_quelle_defausse = keyboard.read_key()
         while touche_quelle_defausse not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
             touche_quelle_defausse = keyboard.read_key()
+
+        dico_touche_defausse = {"1": "1", "&": "1", 
+                                "2": "2", "é": "2",
+                                "3": "3", '"': "3",
+                                "4": "4", "'": "4"}
+
+        defausse_temp = self.__getattribute__("defausse" + str(dico_touche_defausse[touche_quelle_defausse]))
             
-            
-        if touche_quelle_defausse in ["1", "&"] and (self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse1.sommet(), defausse_ou_famille="defausse") == True or self.defausse1.pile_vide() == True):
-                self.defausse1.push(self.carte_piochee)
-                self.carte_piochee = ['0', '0', 'shown']
-                self.interface()
-                
-        elif touche_quelle_defausse in ["2", "é"] and (self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse2.sommet(), defausse_ou_famille="defausse") == True or self.defausse2.pile_vide() == True):
-                self.defausse2.push(self.carte_piochee)
-                self.carte_piochee = ['0', '0', 'shown']
-                self.interface()
-                
-        elif touche_quelle_defausse in ["3", '"'] and (self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse3.sommet(), defausse_ou_famille="defausse") == True or self.defausse2.pile_vide() == True):
-                self.defausse3.push(self.carte_piochee)
-                self.carte_piochee = ['0', '0', 'shown']
-                self.interface()
-                
-        elif touche_quelle_defausse in ["4", "'"] and (self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=self.defausse4.sommet(), defausse_ou_famille="defausse") == True or self.defausse2.pile_vide() == True):
-                self.defausse4.push(self.carte_piochee)
-                self.carte_piochee = ['0', '0', 'shown']
-                self.interface()
+        if defausse_temp.pile_vide() == True:
+            defausse_temp.push(self.carte_piochee)
+            self.carte_piochee = ['0', '0', 'shown']
+            self.interface()
+        elif self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=defausse_temp.sommet(), defausse_ou_famille="defausse"):
+            defausse_temp.push(self.carte_piochee)
+            self.carte_piochee = ['0', '0', 'shown']
+            self.interface()
         
         else:
             self.interface()
@@ -432,6 +427,7 @@ class Game:
 
 
 
+
     def carte_defausse_vers_familles(self):
         print("De quelle défausse (1, 2, 3, 4) ?")
         touche_quelle_defausse = keyboard.read_key()
@@ -463,28 +459,61 @@ class Game:
         famille = self.__getattribute__(dico_touche_familles[touche_quelle_famille])
 
         if self.nb_cartes == "32":
-            if defausse.sommet()[0] == "7":
-                if defausse.sommet()[1] == famille.sommet()[2]:
+            if defausse.pile_vide() == False:
+                if defausse.sommet()[0] == "7":
+                    if defausse.sommet()[1] == famille.sommet()[2]:
+                        famille.push(defausse.pop())
+                        self.interface()
+                elif self.verifier_carte(carte_a_deplacer=defausse.sommet(), carte_inferieur=famille.sommet(), defausse_ou_famille="famille"):
                     famille.push(defausse.pop())
                     self.interface()
                     
 
         elif self.nb_cartes == "52":
-            if defausse.sommet()[0] == "As":
-                if defausse.sommet()[1] == famille.sommet()[2]:
+            if defausse.pile_vide() == False:
+                if defausse.sommet()[0] == "As":
+                    if defausse.sommet()[1] == famille.sommet()[2]:
+                        famille.push(defausse.pop())
+                        self.interface()
+                elif self.verifier_carte(carte_a_deplacer=defausse.sommet(), carte_inferieur=famille.sommet(), defausse_ou_famille="famille"):
                     famille.push(defausse.pop())
                     self.interface()
-                    
-
-        elif self.verifier_carte(carte_a_deplacer=defausse.sommet(), carte_inferieur=famille.sommet(), defausse_ou_famille="defausse"):
-            famille.push(defausse.pop())
-            self.interface()
-            
-        
 
         else:
             self.interface()
             print("Action impossible !")
+
+
+
+    def carte_defausse_vers_defausse(self):
+        print("De quelle défausse (1, 2, 3, 4) ?")
+        touche_1_quelle_defausse = keyboard.read_key()
+                
+        while touche_1_quelle_defausse not in ["1", "2", "3", "4", "&", "é", '"', "'"] and True:
+            touche_1_quelle_defausse = keyboard.read_key()
+
+        
+        time.sleep(1)
+        print("Vers quelle defausse (1, 2, 3, 4) ?")
+        touche_2_quelle_defausse = keyboard.read_key()
+
+        while touche_2_quelle_defausse not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
+            touche_2_quelle_defausse = keyboard.read_key()
+
+
+        dico_touche_defausse = {"1": "1", "&": "1", 
+                                "2": "2", "é": "2",
+                                "3": "3", '"': "3",
+                                "4": "4", "'": "4"}
+
+        defausse_temp_1 = self.__getattribute__("defausse" + str(dico_touche_defausse[touche_1_quelle_defausse]))
+        defausse_temp_2 = self.__getattribute__("defausse" + str(dico_touche_defausse[touche_2_quelle_defausse]))
+
+        if defausse_temp_1 == defausse_temp_2:
+            return print('Action Impossible !')
+        
+        elif defausse_temp_2.pile_vide() == True:
+            pass
 
 
 
