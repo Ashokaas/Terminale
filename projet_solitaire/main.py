@@ -510,10 +510,17 @@ class Game:
         defausse_temp_2 = self.__getattribute__("defausse" + str(dico_touche_defausse[touche_2_quelle_defausse]))
 
         if defausse_temp_1 == defausse_temp_2:
-            return print('Action Impossible !')
+            self.interface()
+            print("Action Inutile ! Voulez-vous réellement déplacer votre carte sur la même défausse qu'auparavnant ? C'est absurde !")
         
-        elif defausse_temp_2.pile_vide() == True:
-            pass
+        elif defausse_temp_2.pile_vide() or self.verifier_carte(carte_a_deplacer=defausse_temp_1.sommet(), carte_inferieur=defausse_temp_2.sommet(), defausse_ou_famille="defausse"):
+            defausse_temp_2.push(defausse_temp_1.pop())
+            self.interface()
+            
+        print(defausse_temp_1.sommet(), defausse_temp_2.sommet())
+        
+            
+        
 
 
 
@@ -544,12 +551,12 @@ while True:
 
     # Si touche = D
     if touche in ["d", "D"]:
-        print('A : Carte piochée vers défausse\nB : Carte piochée vers familles\nC : Carte défausse vers familles')
+        print('A : Carte piochée vers défausse\nB : Carte piochée vers familles\nC : Carte défausse vers familles\nE : Carte défausse vers défausse')
         # Sécurité pour empêcher l'appui successif
         time.sleep(1)
         # Enrigistrment touche
         touche = keyboard.read_key()
-        while touche not in ["a", "A", "b", "B", "c", "C"]:
+        while touche not in ["a", "A", "b", "B", "c", "C", "e", "E"]:
             touche = keyboard.read_key()
 
         if touche in ["a", "A"]:
@@ -560,6 +567,9 @@ while True:
 
         elif touche in ["c", "C"]:
             partie1.carte_defausse_vers_familles()
+            
+        elif touche in ["e", "E"]:
+            partie1.carte_defausse_vers_defausse()
 
     # Si touche = X
     elif touche in ["x", "X"]:
