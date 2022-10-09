@@ -30,9 +30,8 @@ class Game:
 
     def __init__(self):
         """Affiche le menu principal du jeu et demande à l'utilisateur le nombre de cartes à utiliser
-
-        Returns:
-            str: Nombre de cartes
+        Sans argument
+        Sans return
         """
         # OS de l'utilisateur
         self.os = platform.system()
@@ -154,6 +153,8 @@ class Game:
 
     def verifier_victoire(self):
         """Vérifie si la partie a été gagnée
+        Sans argument
+        Sans return
         """
         # Si la somme des familles est égale au nombre de cartes du jeu (+ 4 car on ajouté des cartes nulles au début) alors c'est gagné
         if int(self.nb_cartes) + 4 == self.piques.taille() + self.carreaux.taille() + self.trefles.taille() + self.coeurs.taille():
@@ -187,7 +188,7 @@ class Game:
             text (_type_): texte à modifier
 
         Returns:
-            str: texte
+            str: texte modifié
         """
         texte = str(texte)
         texte = texte.replace('Carreau', self.carreau).replace('Pique', self.pique).replace('Coeur', self.coeur).replace('Trèfle', self.trefle)
@@ -198,6 +199,12 @@ class Game:
     
     def texte_couleurs_familles(self, texte):
         """Met en rouge si la famille est carreau ou coeur
+
+        Args:
+            texte (_type_): texte dont on veut affecter une couleur
+
+        Returns:
+            (_type_): texte colorisé
         """
         if self.carreau in texte or self.coeur in texte:
             return self.color_text(text=texte, color="RED")
@@ -218,9 +225,6 @@ class Game:
         Returns:
             (bool): True si possible / False si impossible
         """
-        """
-        if carte_a_deplacer[0] == "7":
-            return False"""
         # Pour toutes les cartes du jeu
         for x in range(len(self.cartes)):
             # Si on déplace vers une défausse
@@ -244,6 +248,8 @@ class Game:
     
     def clear(self):
         """Clear la console en fonction de l'OS
+        Sans argument
+        Sans return
         """
         if self.os == "Windows":
             os.system('cls')
@@ -274,8 +280,8 @@ class Game:
         """Ajuste le texte s'il est trop court pour que l'interface soit alignée (ex: "1" -> "1 ", "10" -> "10")
 
         Args:
-            text (_type_): Texte
-            debut_fin (_type_): Si le texte est en début ou fin de la carte
+            text: Texte
+            debut_fin: Si le texte est en début ou fin de la carte
 
         Returns:
             (str): texte
@@ -296,6 +302,8 @@ class Game:
             
     def interface(self):
         """ Affiche l'interface
+        Sans argument
+        Sans return
         """
         self.clear()
             
@@ -403,6 +411,8 @@ class Game:
     
     def piocher(self):
         """Piocher un carte dans le talon
+        Sans argument
+        Sans return
         """
         # Si le talon est vide
         if self.talon.file_vide():
@@ -424,6 +434,10 @@ class Game:
         
     
     def carte_piochee_vers_defausse(self):
+        """Transfère la carte de la pioche vers une défausse choisi par l'utilisateur
+        Sans argument
+        Sans return
+        """
         # Vers quelle défausse
         print("Vers quelle défausse (1, 2, 3, 4) ?")
         touche_quelle_defausse = keyboard.read_key()
@@ -454,6 +468,10 @@ class Game:
             
             
     def carte_piochee_vers_familles(self):
+        """Transfère la carte de la pioche vers une famille choisi par l'utilisateur
+        Sans argument
+        Sans return
+        """
         # Vers quelle famille
         print("Vers quelle famille (1, 2, 3, 4) ?")
         touche_quelle_famille = keyboard.read_key()
@@ -485,6 +503,10 @@ class Game:
 
 
     def carte_defausse_vers_familles(self):
+        """Transfère une carte d'une défausse* vers une famille* (*:choisi par l'utilisateur)
+        Sans argument
+        Sans return
+        """
         # De quelle défausse
         print("De quelle défausse (1, 2, 3, 4) ?")
         touche_quelle_defausse = keyboard.read_key()
@@ -531,6 +553,10 @@ class Game:
 
 
     def carte_defausse_vers_defausse(self):
+        """Transfère une carte d'une défausse* vers une autre défausse* (*:choisi par l'utilisateur)
+        Sans argument
+        Sans return
+        """
         # De quelle défausse
         print("De quelle défausse (1, 2, 3, 4) ?")
         touche_1_quelle_defausse = keyboard.read_key()
@@ -568,6 +594,10 @@ class Game:
             
             
     def carte_famille_vers_defausse(self):
+        """Transfère une carte d'une famille* vers une défausse* (*:choisi par l'utilisateur)
+        Sans argument
+        Sans return
+        """
         # De quelle famille
         print("De quelle défausse (1, 2, 3, 4) ?")
         touche_quelle_famille = keyboard.read_key()
@@ -605,6 +635,10 @@ class Game:
             
             
     def quitter(self):
+        """Vérifie si l'utilisateur veut réelement quitter le programme
+        Sans argument
+        Sans return
+        """
         print("Voulez-vous vraiment quitter ?\nAppuyez sur O ou Y pour valider, sinon n'importe quelle autre touche pour refuser.")
         time.sleep(0.5)
         if keyboard.read_key() in ["o", "O", "y", "Y"]:
@@ -612,9 +646,14 @@ class Game:
         else:
             self.interface()
             
+            
     
     
     def victoire_instantanee(self):
+        """Pour vérifier si la méthode verifier victoire fonctionne
+        Sans argument
+        Sans return
+        """
         oui = JeuCarte.JeuCarte(self.nb_cartes).getJeu()
         for e in range(8):
             self.coeurs.push(oui[e])
@@ -626,6 +665,7 @@ class Game:
         self.verifier_victoire()
         #exit()
         
+    
     
     
     def calcul_score(self):
