@@ -539,10 +539,16 @@ class Game:
                 if defausse.sommet()[1] == famille.sommet()[2]:
                     famille.push(defausse.pop())
                     self.interface()
+                else:
+                    self.interface()
+                    print("Action impossible !")
             # Sinon on vérifie le déplacement et on l'effectue ou non
             elif self.verifier_carte(carte_a_deplacer=defausse.sommet(), carte_inferieur=famille.sommet(), defausse_ou_famille="famille"):
                 famille.push(defausse.pop())
                 self.interface()
+            else:
+                self.interface()
+                print("Action impossible !")
                     
         # Sinon l'action est impossible
         else:
@@ -579,7 +585,7 @@ class Game:
         # Si l'utilisateur a choisi les 2 mêmes défausses ou si la 1ère défausse est vide
         if defausse_temp_1 == defausse_temp_2 or defausse_temp_1.pile_vide():
             self.interface()
-            print("Action Impossible")
+            print("Action Impossible !")
         
         # Si la 2ème défausse est vide ou 
         elif defausse_temp_2.pile_vide() or self.verifier_carte(carte_a_deplacer=defausse_temp_1.sommet(), carte_inferieur=defausse_temp_2.sommet(), defausse_ou_famille="defausse"):
@@ -588,7 +594,7 @@ class Game:
         
         else:
             self.interface()
-            print("Action Impossible")
+            print("Action Impossible !")
             
             
             
@@ -599,7 +605,7 @@ class Game:
         Sans return
         """
         # De quelle famille
-        print("De quelle défausse (1, 2, 3, 4) ?")
+        print("De quelle famille (1, 2, 3, 4) ?")
         touche_quelle_famille = keyboard.read_key()
         while touche_quelle_famille not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
             touche_quelle_famille = keyboard.read_key()
@@ -620,7 +626,7 @@ class Game:
         # Si la famille est vide
         if famille_temp.taille() == 1:
             self.interface()
-            print("Action Impossible")
+            print("Action Impossible !")
             
         # Si la 2ème défausse est vide ou 
         elif defausse_temp.pile_vide() or self.verifier_carte(carte_a_deplacer=famille_temp.sommet(), carte_inferieur=defausse_temp.sommet(), defausse_ou_famille="defausse"):
@@ -629,7 +635,7 @@ class Game:
         
         else:
             self.interface()
-            print("Action Impossible")
+            print("Action Impossible !")
             
             
             
