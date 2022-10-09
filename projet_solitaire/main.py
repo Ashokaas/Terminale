@@ -1,19 +1,13 @@
-# ============================================================
-#    IMPORTATIONS DES LIBRAIRIES + Vérification utilisateur
-# ============================================================
+# Vérifications
 
-# On importe uniquement OS en premier afin de ne pas créer d'erreur
-import os
+print(open("lisez_moi.txt", encoding="utf-8").read())
+input("Appuyez sur entrée pour continuer")
 
-# Vérifie que l'utilisateur a bien suivi les intructions pour éviter une erreur
-print("Avez-vous bien lu le fichier 'lisez-moi.txt' ?")
-touche = input("Appuyez sur 'O' puis 'Entrée' pour l'ouvrir ou simplement sur 'Entrée' pour continuer : ")
 
-# Si touche = O alors on ouvre le fichier et on quitte le programme
-if touche in ['o', 'O']:
-    os.startfile('lisez_moi.txt')
-    exit()
 
+# =================================
+#    IMPORTATIONS DES LIBRAIRIES
+# =================================
 
 # Necessaires au bon fonctionnement d'un jeu de carte
 import JeuCarte   # Création d'un jeu de carte
@@ -21,12 +15,12 @@ import pile as p  # Utilisation des piles
 import file as f  # Utilisation des files
 
 # Supplémentaires
+import os         # Clear console
 import colorama   # Coloriser un texte
 import keyboard   # Accès au clavier
 import platform   # Connaître l'OS de l'utilisateur
 import time       # Pour effectuer des pauses et éviter l'appui involontaire d'une touche
-
-
+from playsound import playsound  # Jouer musique
 
 
 # =====================================
@@ -80,7 +74,8 @@ class Game:
         self.coeur = "♥"
         self.trefle = "♣"
         
-        # Définition du score
+        # Définition du nombre de retournement du talon et du score
+        self.nb_retournement_talon = 0
         self.score = 0
 
         # Définition du jeu en fonction du nombre de cartes
@@ -150,6 +145,9 @@ class Game:
                                 "2": "piques", "é": "piques",
                                 "3": "carreaux", '"': "carreaux",
                                 "4": "trefles", "'": "trefles"}
+        
+        # Famille terminées
+        self.famille_terminee = {"coeurs": False, "piques": False, "carreaux": False, "trefles": False}
 
 
 
@@ -157,20 +155,27 @@ class Game:
     def verifier_victoire(self):
         """Vérifie si la partie a été gagnée
         """
-        # Si la somme des familles (+ 4 car on ajouté des cartes nulles au début) est égale au nombre de cartes du jeu alors c'est gagné
-        if int(self.nb_cartes) == self.piques.taille() + self.carreaux.taille() + self.trefles.taille() + self.coeurs.taille() + 4:
+        # Si la somme des familles est égale au nombre de cartes du jeu (+ 4 car on ajouté des cartes nulles au début) alors c'est gagné
+        if int(self.nb_cartes) + 4 == self.piques.taille() + self.carreaux.taille() + self.trefles.taille() + self.coeurs.taille():
+            self.clear()
+            self.calcul_score()
+            try:
+                playsound(sound="valorant_victory_theme.mp3", block=False)
+            except:
+                print('Erreur lors de la lecture du theme de la victoire.')
             print("""\n\n
                 ██╗░░░██╗██╗░█████╗░████████╗░█████╗░██╗██████╗░███████╗
                 ██║░░░██║██║██╔══██╗╚══██╔══╝██╔══██╗██║██╔══██╗██╔════╝
                 ╚██╗░██╔╝██║██║░░╚═╝░░░██║░░░██║░░██║██║██████╔╝█████╗░░
                 ░╚████╔╝░██║██║░░██╗░░░██║░░░██║░░██║██║██╔══██╗██╔══╝░░
                 ░░╚██╔╝░░██║╚█████╔╝░░░██║░░░╚█████╔╝██║██║░░██║███████╗
-                ░░░╚═╝░░░╚═╝░╚════╝░░░░╚═╝░░░░╚════╝░╚═╝╚═╝░░╚═╝╚══════╝""")
+                ░░░╚═╝░░░╚═╝░╚════╝░░░░╚═╝░░░░╚════╝░╚═╝╚═╝░░╚═╝╚══════╝\n\n""")
 
-            print(f"Score : {self.score}")
+            print(f"Nombre de retournement du talon : {self.nb_retournement_talon}\nScore : {self.score}")
             print("Appuyez sur 'espace' pour quitter !")
             keyboard.wait('space')
             exit()
+        
             
 
 
@@ -230,8 +235,7 @@ class Game:
                 # Quand on atteint la carte à déplacer et si la carte inférieur est égale à la carte d'avant de self.cartes
                 if carte_a_deplacer[0] == self.cartes[x] and carte_inferieur[0] == self.cartes[x-1]:
                     # Si les cartes sont de la même couleur
-                    if self.couleurs_familles[carte_a_deplacer[1]] == self.couleurs_familles[carte_inferieur[1]]:
-                        self.score += 2
+                    if carte_a_deplacer[1] == carte_inferieur[1]:
                         return True
         return False
 
@@ -375,16 +379,16 @@ class Game:
                     if carte[2] == "hidden":
                         # Si c'est le sommet de la défausse
                         if nb_passage == defausse.taille():
-                            print("?  " + "       │ ")
+                            print("?   " + "      │ ")
                         else:
-                            print("?  " + "   │ ", end="")
+                            print("?   " + "  │ ", end="")
                     # Si elle doit être affiché
                     else:
                         # Si c'est la dernière
                         if nb_passage == defausse.taille():
                             print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]), debut_fin="debut")+ "      │")
                         else:
-                            print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]), debut_fin="debut")+ "   │ ", end="")
+                            print(self.text_console(text=carte[0], debut_fin="debut") + self.text_console(text=self.symboles_familles(carte[1]), debut_fin="debut")+ "  │ ", end="")
                     nb_passage += 1
                 
                 # Ligne 3 à 4
@@ -392,7 +396,9 @@ class Game:
                 # Dernière ligne
                 print("     " + (defausse.taille()-1)*"└───────" + "└───────────┘\n")
         
-    
+
+
+
     
     
     def piocher(self):
@@ -404,8 +410,7 @@ class Game:
             while not self.talon_temp.file_vide():
                 # On prends chaque carte du talon_temp pour la mettre dans le talon
                 self.talon.ajout(self.talon_temp.retire())
-            # On retire 20 au score
-            self.score -= 20
+            self.nb_retournement_talon += 1
             
         # Si aucune carte n'est présente dans la pioche alors on pioche
         if self.carte_piochee == ['0', '0', 'shown']:
@@ -529,7 +534,7 @@ class Game:
         # De quelle défausse
         print("De quelle défausse (1, 2, 3, 4) ?")
         touche_1_quelle_defausse = keyboard.read_key()
-        while touche_1_quelle_defausse not in ["1", "2", "3", "4", "&", "é", '"', "'"] and True:
+        while touche_1_quelle_defausse not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
             touche_1_quelle_defausse = keyboard.read_key()
 
         time.sleep(0.5)
@@ -558,27 +563,87 @@ class Game:
             
             
             
+    def carte_famille_vers_defausse(self):
+        # De quelle famille
+        print("De quelle défausse (1, 2, 3, 4) ?")
+        touche_quelle_famille = keyboard.read_key()
+        while touche_quelle_famille not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
+            touche_quelle_famille = keyboard.read_key()
+
+        time.sleep(0.5)
+        
+        # Vers quelle défausse
+        print("Vers quelle defausse (1, 2, 3, 4) ?")
+        touche_quelle_defausse = keyboard.read_key()
+        while touche_quelle_defausse not in ["1", "2", "3", "4", "&", "é", '"', "'"]:
+            touche_quelle_defausse = keyboard.read_key()
+
+
+        # Défausse et famille temporaires à utiliser pour clarifier le code            
+        defausse_temp = self.__getattribute__("defausse" + str(self.dico_touche_defausse[touche_quelle_defausse]))
+        famille_temp = self.__getattribute__("defausse" + str(self.dico_touche_familles[touche_quelle_famille]))
+        
+        # Si la famille est vide
+        if famille_temp.taille() == 1:
+            self.interface()
+            print("Action Impossible")
+            
+        # Si la 2ème défausse est vide ou 
+        elif defausse_temp.pile_vide() or self.verifier_carte(carte_a_deplacer=famille_temp.sommet(), carte_inferieur=defausse_temp.sommet(), defausse_ou_famille="defausse"):
+            defausse_temp.push(famille_temp.pop())
+            self.interface()
+            
+            
+            
+            
     def quitter(self):
         print("Voulez-vous vraiment quitter ?\nAppuyez sur O ou Y pour valider, sinon n'importe quelle autre touche pour refuser.")
         time.sleep(0.5)
         if keyboard.read_key() in ["o", "O", "y", "Y"]:
             exit()
         else:
-            partie1.interface()
+            self.interface()
             
+    
+    
+    def victoire_instantanee(self):
+        oui = JeuCarte.JeuCarte(self.nb_cartes).getJeu()
+        for e in range(8):
+            self.coeurs.push(oui[e])
+            self.piques.push(oui[e+8])
+            self.carreaux.push(oui[e+16])
+            self.trefles.push(oui[e+24])
+        
+        print(self.coeurs.taille(), self.piques.taille(), self.carreaux.taille(), self.trefles.taille())
+        self.verifier_victoire()
+        #exit()
+        
+    
+    
+    def calcul_score(self):
+        familles = ["coeurs", "piques", "carreaux", "trefles"]
+        for famille in familles:
+            if self.__getattribute__(famille).taille() == int(self.nb_cartes)/4 + 1 and not self.famille_terminee[famille]:
+                self.famille_terminee[famille] = True
+                self.score += 30-self.nb_retournement_talon*15
+             
+            
+            
+        
+            
+        
+        
             
         
 
 
-
 partie1 = Game()
-
+partie1.victoire_instantanee()
 partie1.interface()
 while True:
-    print(f"Score : {partie1.score}")
+    print(f"Nombre de retournement du talon : {partie1.nb_retournement_talon}\nScore : {partie1.score}")
     # Indications
-    print("T : Piocher\nD : Déplacer une carte\nX : Arrêter la partie\n")
-    
+    print("\nT : Piocher\nD : Déplacer une carte\nX : Arrêter la partie\n")
     # Sécurité pour empêcher l'appui successif
     #time.sleep(0.5)
     
@@ -586,39 +651,52 @@ while True:
     touche = keyboard.read_key()
     while touche not in ["x", "X", "d", "D", "t", "T"]:
         touche = keyboard.read_key()
-    
     # Si touche = T
     if touche in ["t", "T"]:
         partie1.piocher()
 
     # Si touche = D
     if touche in ["d", "D"]:
-        print('A : Carte piochée vers défausse\nB : Carte piochée vers familles\nC : Carte défausse vers familles\nE : Carte défausse vers défausse')
+        print("""
+A : Carte piochée vers défausse
+B : Carte piochée vers familles
+C : Carte défausse vers familles
+E : Carte défausse vers défausse
+F : Carte famille vers défausses""")
         # Sécurité pour empêcher l'appui successif
         time.sleep(0.5)
         # Enrigistrment touche
         touche = keyboard.read_key()
-        while touche not in ["a", "A", "b", "B", "c", "C", "e", "E"]:
+        while touche not in ["a", "A", "b", "B", "c", "C", "e", "E", "f", "F"]:
             touche = keyboard.read_key()
-
+        
+        # Si touche == A
         if touche in ["a", "A"]:
             partie1.carte_piochee_vers_defausse()
         
+        # Si touche = B
         elif touche in ["b", "B"]:
             partie1.carte_piochee_vers_familles()
-
+        
+        # Si touche = C
         elif touche in ["c", "C"]:
             partie1.carte_defausse_vers_familles()
-            
+        
+        # Si touche = E
         elif touche in ["e", "E"]:
             partie1.carte_defausse_vers_defausse()
+            
+        # Si touche = F
+        elif touche in ["f", "F"]:
+            partie1.carte_famille_vers_defausse()
 
     # Si touche = X
     elif touche in ["x", "X"]:
         partie1.clear()
         partie1.quitter()
 
-
+    partie1.interface()
+    partie1.calcul_score()
     partie1.verifier_victoire()
     
         

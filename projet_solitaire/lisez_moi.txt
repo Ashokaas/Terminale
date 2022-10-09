@@ -1,10 +1,27 @@
-Le programme est mieux affiché dans un terminal à échelle réduite.
+
+Recommandations : 
+  - Executer le programme dans un terminal
+  - Désactiver le défilement vers l'avant
+     - Clique droit
+     - Propriétés
+     - Terminal
+     - Désactiver le défilement vers l'avant
+     - Redémarrer le terminal
 
 Les librairies suivantes sont nécessaires:
-  - colorama
   - os
+  - colorama
   - keyboard
   - platform
   - time
 
-Sur Linux il faut être en root pour pouvoir utiliser keyboard.
+Les fichiers suivants sont nécessaires:
+  - lisez_moi.txt
+  - Carte.py
+  - JeuCarte.py
+  - file.py
+  - pile.py
+
+Sur Linux il faut être en administrateur pour pouvoir utiliser keyboard.
+  - sudo pip install keyboard
+  - sudo python3 main.py'
