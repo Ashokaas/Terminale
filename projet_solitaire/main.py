@@ -91,29 +91,29 @@ class Game:
                 # Défausse 1
         self.defausse1 = p.Pile()
         for _ in range(4):
-            c = self.talon.retire()
-            c[2] = 'hidden'
-            self.defausse1.push(c)
+            to_hidden = self.talon.retire()
+            to_hidden[2] = 'hidden'
+            self.defausse1.push(to_hidden)
             
                 # Défausse 2
         self.defausse2 = p.Pile()
         for _ in range(3):
-            c = self.talon.retire()
-            c[2] = 'hidden'
-            self.defausse2.push(c)
+            to_hidden = self.talon.retire()
+            to_hidden[2] = 'hidden'
+            self.defausse2.push(to_hidden)
             
                 # Défausse 3
         self.defausse3 = p.Pile()
         for _ in range(2):
-            c = self.talon.retire()
-            c[2] = 'hidden'
-            self.defausse3.push(c)
+            to_hidden = self.talon.retire()
+            to_hidden[2] = 'hidden'
+            self.defausse3.push(to_hidden)
             
                 # Défausse 4
         self.defausse4 = p.Pile()
-        c = self.talon.retire()
-        c[2] = 'hidden'
-        self.defausse4.push(c)
+        to_hidden = self.talon.retire()
+        to_hidden[2] = 'hidden'
+        self.defausse4.push(to_hidden)
         
         
         # Définition des 4 familles
@@ -226,18 +226,18 @@ class Game:
             (bool): True si possible / False si impossible
         """
         # Pour toutes les cartes du jeu
-        for x in range(len(self.cartes)):
+        for iter in range(len(self.cartes)):
             # Si on déplace vers une défausse
             if defausse_ou_famille == "defausse":
                 # Quand on atteint la carte à déplacer et si la carte inférieur est égale à la carte d'avant de self.cartes
-                if carte_a_deplacer[0] == self.cartes[x] and carte_inferieur[0] == self.cartes[x-1]:
+                if carte_a_deplacer[0] == self.cartes[iter] and carte_inferieur[0] == self.cartes[iter-1]:
                     # Si les cartes sont d'une couleur opposée
                     if self.couleurs_familles[carte_a_deplacer[1]] != self.couleurs_familles[carte_inferieur[1]]:
                         return True
             # Si on déplace vers une famille
             elif defausse_ou_famille == "famille":
                 # Quand on atteint la carte à déplacer et si la carte inférieur est égale à la carte d'avant de self.cartes
-                if carte_a_deplacer[0] == self.cartes[x] and carte_inferieur[0] == self.cartes[x-1]:
+                if carte_a_deplacer[0] == self.cartes[iter] and carte_inferieur[0] == self.cartes[iter-1]:
                     # Si les cartes sont de la même couleur
                     if carte_a_deplacer[1] == carte_inferieur[1]:
                         return True
@@ -483,10 +483,10 @@ class Game:
         
         # Si c'est la première carte
         if (self.nb_cartes == "32" and self.carte_piochee[0] == "7" and defausse_temp.sommet()[2] == self.carte_piochee[1]) \
-            or (self.nb_cartes == "52" and self.carte_piochee[0] == "As" and defausse_temp.sommet()[2] == self.carte_piochee[1]):
-                    defausse_temp.push(self.carte_piochee)
-                    self.carte_piochee = ['0', '0', 'shown']
-                    self.interface()
+        or (self.nb_cartes == "52" and self.carte_piochee[0] == "As" and defausse_temp.sommet()[2] == self.carte_piochee[1]):
+            defausse_temp.push(self.carte_piochee)
+            self.carte_piochee = ['0', '0', 'shown']
+            self.interface()
 
         # Sinon, si le déplacement est possible on l'effectue
         elif self.verifier_carte(carte_a_deplacer=self.carte_piochee, carte_inferieur=defausse_temp.sommet(), defausse_ou_famille="famille"):
@@ -654,16 +654,17 @@ class Game:
         Sans argument
         Sans return
         """
-        oui = JeuCarte.JeuCarte(self.nb_cartes).getJeu()
-        for e in range(8):
-            self.coeurs.push(oui[e])
-            self.piques.push(oui[e+8])
-            self.carreaux.push(oui[e+16])
-            self.trefles.push(oui[e+24])
+        jeu_carte = JeuCarte.JeuCarte(self.nb_cartes).getJeu()
+        nb_carte = int(self.nb_cartes)
+        for inter in range(int(nb_carte/4)):
+            self.coeurs.push(jeu_carte[int(inter)])
+            self.piques.push(jeu_carte[int(inter+(nb_carte/4)*1)])
+            self.carreaux.push(jeu_carte[int(inter+(nb_carte/4)*2)])
+            self.trefles.push(jeu_carte[int(inter+(nb_carte/4)*3)])
         
         print(self.coeurs.taille(), self.piques.taille(), self.carreaux.taille(), self.trefles.taille())
         self.verifier_victoire()
-        #exit()
+        exit()
         
     
     
@@ -674,17 +675,11 @@ class Game:
             if self.__getattribute__(famille).taille() == int(self.nb_cartes)/4 + 1 and not self.famille_terminee[famille]:
                 self.famille_terminee[famille] = True
                 self.score += 30-self.nb_retournement_talon*15
-             
-            
-            
-        
-            
-        
-        
-            
-        
 
-
+     
+            
+            
+        
 partie1 = Game()
 #partie1.victoire_instantanee()
 partie1.interface()
@@ -693,7 +688,7 @@ while True:
     # Indications
     print("\nT : Piocher\nD : Déplacer une carte\nX : Arrêter la partie")
     # Sécurité pour empêcher l'appui successif
-    #time.sleep(0.5)
+    time.sleep(0.5)
     
     # Enrigistrment touche
     touche = keyboard.read_key()
@@ -750,6 +745,3 @@ P : Retour""")
 
     partie1.calcul_score()
     partie1.verifier_victoire()
-    
-        
-    
