@@ -559,6 +559,10 @@ class Game:
         elif defausse_temp_2.pile_vide() or self.verifier_carte(carte_a_deplacer=defausse_temp_1.sommet(), carte_inferieur=defausse_temp_2.sommet(), defausse_ou_famille="defausse"):
             defausse_temp_2.push(defausse_temp_1.pop())
             self.interface()
+        
+        else:
+            self.interface()
+            print("Action Impossible")
             
             
             
@@ -581,7 +585,7 @@ class Game:
 
         # Défausse et famille temporaires à utiliser pour clarifier le code            
         defausse_temp = self.__getattribute__("defausse" + str(self.dico_touche_defausse[touche_quelle_defausse]))
-        famille_temp = self.__getattribute__("defausse" + str(self.dico_touche_familles[touche_quelle_famille]))
+        famille_temp = self.__getattribute__(str(self.dico_touche_familles[touche_quelle_famille]))
         
         # Si la famille est vide
         if famille_temp.taille() == 1:
@@ -592,6 +596,10 @@ class Game:
         elif defausse_temp.pile_vide() or self.verifier_carte(carte_a_deplacer=famille_temp.sommet(), carte_inferieur=defausse_temp.sommet(), defausse_ou_famille="defausse"):
             defausse_temp.push(famille_temp.pop())
             self.interface()
+        
+        else:
+            self.interface()
+            print("Action Impossible")
             
             
             
@@ -638,12 +646,12 @@ class Game:
 
 
 partie1 = Game()
-partie1.victoire_instantanee()
+#partie1.victoire_instantanee()
 partie1.interface()
 while True:
     print(f"Nombre de retournement du talon : {partie1.nb_retournement_talon}\nScore : {partie1.score}")
     # Indications
-    print("\nT : Piocher\nD : Déplacer une carte\nX : Arrêter la partie\n")
+    print("\nT : Piocher\nD : Déplacer une carte\nX : Arrêter la partie")
     # Sécurité pour empêcher l'appui successif
     #time.sleep(0.5)
     
@@ -659,15 +667,16 @@ while True:
     if touche in ["d", "D"]:
         print("""
 A : Carte piochée vers défausse
-B : Carte piochée vers familles
-C : Carte défausse vers familles
+B : Carte piochée vers famille
+C : Carte défausse vers famille
 E : Carte défausse vers défausse
-F : Carte famille vers défausses""")
+F : Carte famille vers défausse
+P : Retour""")
         # Sécurité pour empêcher l'appui successif
         time.sleep(0.5)
         # Enrigistrment touche
         touche = keyboard.read_key()
-        while touche not in ["a", "A", "b", "B", "c", "C", "e", "E", "f", "F"]:
+        while touche not in ["a", "A", "b", "B", "c", "C", "e", "E", "f", "F", "p", "P"]:
             touche = keyboard.read_key()
         
         # Si touche == A
@@ -689,13 +698,16 @@ F : Carte famille vers défausses""")
         # Si touche = F
         elif touche in ["f", "F"]:
             partie1.carte_famille_vers_defausse()
+        
+        elif touche in ["p", "P"]:
+            partie1.interface()
+        
 
     # Si touche = X
     elif touche in ["x", "X"]:
         partie1.clear()
         partie1.quitter()
 
-    partie1.interface()
     partie1.calcul_score()
     partie1.verifier_victoire()
     
