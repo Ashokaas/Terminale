@@ -41,4 +41,6 @@ class JeuCarte:  # définition de la classe
         return choice(self.jeu).getAttributs()
 
     def melangerJeu(self):  # méthode 6 : pour mélanger le jeu
-        shuffle(self.jeu)
+        #shuffle(self.jeu)
+        self.jeu = self.jeu[::-1]
+        
