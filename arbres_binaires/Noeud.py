@@ -153,6 +153,8 @@ class ArbreListe:
             profondeur += 1
         return profondeur
     
+
+    
     
     
     
@@ -208,6 +210,21 @@ class NoeudFils:
             noeud_temp = noeud_temp.fils_droit
         return True
 
+
+def taille(arbre:ArbreListe):
+    return arbre.calculer_taille()
+
+def hauteur(arbre:ArbreListe):
+    return arbre.calculer_hauteur()
+
+def est_complet(arbre:ArbreListe):
+    return False if None in arbre.liste else True
+    
+
+def parcours_infixe(arbre:ArbreListe):
+    pass
+
+    
 
 
 if __name__ == "__main__":
