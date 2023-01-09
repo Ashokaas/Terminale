@@ -107,6 +107,8 @@ class ListeChainee:
                 compteur += 1
                 noeud_parcouru = noeud_parcouru.get_ref()
             noeud_parcouru.set_ref(noeud_parcouru.get_ref().get_ref())
+            
+            
         
         
 class ArbreListe:
@@ -209,13 +211,47 @@ class NoeudFils:
                 return False
             noeud_temp = noeud_temp.fils_droit
         return True
+    
+    
+    def est_parfait(self):
+        if self.item is None:
+            return True
+        return self.fils_gauche.est_parfait() and self.fils_droit.est_parfait() and self.fils_gauche.hauteur() == self.fils_droit.hauteur()
+    
+    
+    def hauteur(self):
+        return 0 if self.item is None else 1 + max(self.fils_droit.hauteur(), self.fils_gauche.hauteur())
+
+
+def parcours_infixe(arbre):
+    if arbre is None:
+        return
+    else:
+        parcours_infixe(arbre.fils_gauche)
+        print(arbre.valeur)
+        parcours_infixe(arbre.fils_droit)
+
+
+def parcours_prefix(arbre):
+    if arbre is None:
+        return
+    else:
+        print(arbre.item)
+        parcours_prefix(arbre.fils_gauche)
+        parcours_prefix(arbre.fils_droit)
+
+
+def parcours_sufixe(arbre):
+    pass
 
 
 def taille(arbre:ArbreListe):
     return arbre.calculer_taille()
 
+
 def hauteur(arbre:ArbreListe):
     return arbre.calculer_hauteur()
+
 
 def est_complet(arbre:ArbreListe):
     return False if None in arbre.liste else True
@@ -224,27 +260,11 @@ def est_complet(arbre:ArbreListe):
 def parcours_infixe(arbre:ArbreListe):
     pass
 
-    
-
 
 if __name__ == "__main__":
-    """test = ListeChainee()
-    test.ajouter_element(5)
-    test.ajouter_element(4)
-    test.ajouter_element(3)
-    test.ajouter_element(2)
-    test.ajouter_element(1)
-    test.set_element(10, 1)
-    test.supprimer_element(2)
-    for i in range(test.compter_elements()):
-        print(test.supprimer_tete())"""
-    test2 = ArbreListe()
-    test2.ajouter_niveau()
-    test2.ajouter_niveau()
-    test2.ajouter_niveau()
-    test2.ajouter_niveau()
-    test2.ajouter_niveau()
-    test2.ajouter_niveau()
-    print(test2.calculer_profondeur(16))
+    noeud = ArbreListe()
+    noeud.ajouter_fils_gauche("2", 0)
+
+
 
 
