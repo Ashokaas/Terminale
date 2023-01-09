@@ -44,7 +44,19 @@ coupe.D.D.G.G = Noeud(('Rezé', 'Dunkerque', 23, 41))
 coupe.D.D.G.D = Noeud(('Nice', 'Toulouse', 29, 40))
 coupe.D.D.D.G = Noeud(('Besançon', 'Aix', 30, 37))
 coupe.D.D.D.D = Noeud(('Chartres', 'Cesson', 35, 31))
+def parcours_prefix(arbre):
+    """
+    Affiche les éléments de l'arbre dans un parcours préfixe
+    :param arbre: objet de la classe Noeud
+    :return: les valeurs des étiquettes dans l'ordre préfixe
+    """
 
+    # TODO
+    if arbre is None:
+        return
+    else:
+        parcours_prefix(arbre.G)
+        parcours_prefix(arbre.D)
 
 def lire_resultats(arbre, dic):
     """
@@ -53,12 +65,41 @@ def lire_resultats(arbre, dic):
     :param dic: dictionnaire
     :return: dictionnaire associant à chaque équipe une liste [matchs joués, points marqués, points encaissés]
     """
-    #TODO
-    pass
+
+    liste = []
+    def parcours_prefixix(arbre, liste):
+        if arbre is None:
+            return
+        else:
+            liste.append(arbre.valeur)
+            parcours_prefixix(arbre.G, liste)
+            parcours_prefixix(arbre.D, liste)
+            
+    parcours_prefixix(arbre, liste)
+    for match in liste:
+        print(match)
+        if match[0] not in resultats:
+            resultats[match[0]] = {"matchs joués": 0, "points marqués": 0, "points encaissés": 0}
+        resultats[match[0]]["matchs joués"] += 1
+        resultats[match[0]]["points marqués"] += match[2]
+        resultats[match[0]]["points encaissés"] += match[3]
+        
+        if match[1] not in resultats:
+            resultats[match[1]] = {"matchs joués": 0, "points marqués": 0, "points encaissés": 0}
+        resultats[match[1]]["matchs joués"] += 1
+        resultats[match[1]]["points marqués"] += match[3]
+        resultats[match[1]]["points encaissés"] += match[2]
+        
+        
+    return resultats
+            
+        
+    
 
 
 resultats = {}
 lire_resultats(coupe, resultats)
+#[print(resultats) for result in resultats]
 
 
 # Affichage

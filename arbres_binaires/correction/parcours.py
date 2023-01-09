@@ -17,7 +17,7 @@ def parcours_infixe(arbre: Noeud):
         parcours_infixe(arbre.D)
 
 
-def parcours_prefix(arbre:Noeud):
+def parcours_prefix(arbre):
     """
     Affiche les éléments de l'arbre dans un parcours préfixe
     :param arbre: objet de la classe Noeud
@@ -33,7 +33,7 @@ def parcours_prefix(arbre:Noeud):
         parcours_prefix(arbre.D)
 
 
-def parcours_suffixe(arbre:Noeud):
+def parcours_suffixe(arbre):
     """
     Affiche les éléments de l'arbre dans un parcours suffixe
     :param arbre: objet de la classe Noeud
@@ -48,7 +48,7 @@ def parcours_suffixe(arbre:Noeud):
         print(arbre.valeur)
 
 
-def parcours_largeur(arbre:Noeud):
+def parcours_largeur(arbre):
     """
     Affiche les éléments de l'arbre dans un parcours suffixe
     :param arbre: objet de la classe Noeud
